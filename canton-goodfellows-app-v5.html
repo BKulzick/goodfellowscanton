@@ -1,0 +1,2417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Canton Goodfellows App</title>
+<link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700;900&family=Open+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy:      #1a2a4a;
+    --navy-dark: #111d36;
+    --navy-mid:  #223360;
+    --red:       #c0392b;
+    --off-white: #f7f8fb;
+    --lt-gray:   #eef0f5;
+    --border:    #d6dae6;
+    --text:      #222831;
+    --muted:     #6b7280;
+    --green:     #1a7a4a;
+    --green-bg:  #eaf5ee;
+    --gold:      #c8980a;
+    --gold-bg:   #fdf6e3;
+    --amazon:    #FF9900;
+    --amazon-bg: #FFF8EE;
+    --shadow-sm: 0 2px 8px rgba(26,42,74,0.08);
+    --shadow-md: 0 6px 24px rgba(26,42,74,0.13);
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+
+  body {
+    font-family:'Open Sans',sans-serif;
+    background:#0d1520;
+    min-height:100vh;
+    padding:40px 20px 60px;
+    display:flex; justify-content:center; align-items:flex-start;
+    gap:36px; flex-wrap:wrap;
+  }
+
+  /* Phone */
+  .pw { display:flex; flex-direction:column; align-items:center; gap:14px; }
+  .plabel { color:#5a7090; font-size:11px; letter-spacing:2px; text-transform:uppercase; }
+  .phone {
+    width:375px; height:812px; background:var(--off-white);
+    border-radius:48px; overflow:hidden; position:relative;
+    box-shadow:0 0 0 8px #1c2a3e,0 0 0 10px #2e3f58,0 40px 100px rgba(0,0,0,0.7);
+  }
+  .notch {
+    position:absolute; top:0; left:50%; transform:translateX(-50%);
+    width:120px; height:28px; background:#0d1520;
+    border-radius:0 0 20px 20px; z-index:100;
+  }
+
+  /* Screens */
+  .scr { width:100%; height:100%; overflow-y:auto; overflow-x:hidden; scrollbar-width:none; display:none; background:var(--off-white); }
+  .scr::-webkit-scrollbar { display:none; }
+  .scr.on { display:block; }
+
+  /* Status bar */
+  .sbar { height:44px; padding:12px 20px 0; display:flex; justify-content:space-between; align-items:center; font-size:12px; font-weight:600; }
+  .sbar.lt { color:white; } .sbar.dk { color:var(--navy); }
+  .si { display:flex; gap:5px; align-items:center; }
+
+  /* Back button */
+  .back {
+    position:absolute; top:48px; left:18px; width:34px; height:34px;
+    background:rgba(255,255,255,0.18); border:1px solid rgba(255,255,255,0.25);
+    border-radius:50%; display:flex; align-items:center; justify-content:center;
+    cursor:pointer; font-size:16px; color:white; z-index:10; font-family:'Open Sans',sans-serif;
+  }
+
+  /* Hero */
+  .hero { background:var(--navy); padding:44px 20px 22px; text-align:center; position:relative; }
+  .hero h2 { font-family:'Merriweather',serif; font-size:19px; font-weight:700; color:white; margin-top:4px; }
+  .hero p  { font-size:12px; color:rgba(255,255,255,0.6); margin-top:4px; }
+
+  /* Progress */
+  .prog-wrap { background:white; padding:14px 20px; border-bottom:1px solid var(--border); }
+  .prog-meta { display:flex; justify-content:space-between; font-size:11px; margin-bottom:8px; }
+  .prog-meta .sn { color:var(--navy); font-weight:700; }
+  .prog-meta .sc { color:var(--muted); }
+  .prog-track { height:5px; background:var(--lt-gray); border-radius:99px; overflow:hidden; }
+  .prog-fill  { height:100%; background:var(--navy); border-radius:99px; transition:width 0.4s ease; }
+  .dots { display:flex; gap:6px; margin-top:10px; justify-content:center; }
+  .dot { width:8px; height:8px; border-radius:50%; background:var(--lt-gray); }
+  .dot.done   { background:var(--green); }
+  .dot.active { background:var(--navy); width:22px; border-radius:4px; }
+
+  /* Form */
+  .fb { padding:18px 16px 32px; }
+  .flabel { display:block; font-size:11px; font-weight:700; color:var(--navy); text-transform:uppercase; letter-spacing:0.8px; margin-bottom:6px; }
+  .finput { width:100%; padding:11px 13px; border:1.5px solid var(--border); border-radius:10px; font-size:14px; font-family:'Open Sans',sans-serif; color:var(--text); background:white; outline:none; transition:border-color 0.2s; }
+  .finput:focus { border-color:var(--navy); }
+  .fgroup { margin-bottom:14px; }
+  .frow { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .divider { height:1px; background:var(--border); margin:16px 0; }
+
+  /* Buttons */
+  .btn-primary   { width:100%; padding:14px; background:var(--navy); color:white; border:none; border-radius:12px; font-size:14px; font-weight:700; font-family:'Open Sans',sans-serif; cursor:pointer; margin-top:10px; transition:all 0.2s; }
+  .btn-primary:hover { background:var(--navy-mid); transform:translateY(-1px); }
+  .btn-secondary { width:100%; padding:13px; background:white; color:var(--navy); border:1.5px solid var(--border); border-radius:12px; font-size:13px; font-weight:600; font-family:'Open Sans',sans-serif; cursor:pointer; margin-top:8px; transition:all 0.2s; }
+  .btn-secondary:hover { border-color:var(--navy); }
+  .btn-green { width:100%; padding:13px; background:var(--green); color:white; border:none; border-radius:12px; font-size:13px; font-weight:700; font-family:'Open Sans',sans-serif; cursor:pointer; margin-top:8px; }
+  .btn-red   { width:100%; padding:13px; background:#fdecea; color:var(--red); border:1.5px solid #f0a09a; border-radius:12px; font-size:13px; font-weight:700; font-family:'Open Sans',sans-serif; cursor:pointer; margin-top:8px; }
+
+  /* Info boxes */
+  .ibox { border-radius:12px; padding:14px; margin-bottom:12px; border:1.5px solid; }
+  .ibox.blue  { background:#eef3fb; border-color:#b3caf0; }
+  .ibox.green { background:var(--green-bg); border-color:#a3d4b5; }
+  .ibox.gold  { background:var(--gold-bg); border-color:#e5d080; }
+  .ibox-top { display:flex; align-items:center; gap:8px; margin-bottom:5px; }
+  .ibox-ttl { font-size:12px; font-weight:700; color:var(--navy); }
+  .ibox-body{ font-size:12px; color:var(--muted); line-height:1.6; }
+  .ibox-chip { display:inline-block; margin-top:8px; padding:3px 10px; border-radius:99px; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; }
+  .ibox-chip.green { background:var(--green); color:white; }
+
+  /* Section label */
+  .sec-label { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:1.5px; color:var(--muted); padding:14px 16px 8px; }
+
+  /* ══ HOME SCREEN ══ */
+  .home-hero {
+    background:var(--navy); padding:44px 24px 36px;
+    text-align:center; position:relative; overflow:hidden;
+  }
+  .home-hero::before { content:'❄'; position:absolute; font-size:200px; color:rgba(255,255,255,0.03); top:-40px; right:-40px; pointer-events:none; }
+  .home-hero::after  { content:'❄'; position:absolute; font-size:130px; color:rgba(255,255,255,0.03); bottom:-30px; left:-20px; pointer-events:none; }
+  .logo-badge { width:80px; height:80px; background:white; border-radius:16px; margin:0 auto 18px; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 20px rgba(0,0,0,0.25); overflow:hidden; }
+  .logo-badge img { width:100%; height:100%; object-fit:contain; padding:8px; }
+  .home-tagline { font-family:'Merriweather',serif; font-size:12px; color:rgba(255,255,255,0.55); letter-spacing:1.5px; text-transform:uppercase; margin-bottom:6px; }
+  .home-title   { font-family:'Merriweather',serif; font-size:22px; font-weight:900; color:white; line-height:1.25; margin-bottom:6px; }
+  .home-title span { color:#7fb3e8; }
+  .home-year    { font-size:12px; color:rgba(255,255,255,0.45); font-weight:300; }
+
+  .stat-strip { display:grid; grid-template-columns:1fr 1fr 1fr; background:var(--navy-dark); border-bottom:1px solid rgba(255,255,255,0.06); }
+  .stat-cell  { padding:14px 8px; text-align:center; border-right:1px solid rgba(255,255,255,0.06); }
+  .stat-cell:last-child { border-right:none; }
+  .stat-num { font-family:'Merriweather',serif; font-size:22px; font-weight:700; color:#7fb3e8; }
+  .stat-lbl { font-size:9px; color:rgba(255,255,255,0.45); text-transform:uppercase; letter-spacing:1px; margin-top:2px; }
+
+  .portals { padding:20px 16px 8px; }
+  .portals-heading { font-size:10px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); font-weight:600; margin-bottom:14px; padding-left:4px; }
+  .portal-card { background:white; border-radius:16px; padding:18px 16px; margin-bottom:10px; display:flex; align-items:center; gap:14px; cursor:pointer; box-shadow:var(--shadow-sm); border:1.5px solid var(--border); transition:all 0.2s; }
+  .portal-card:hover { transform:translateY(-2px); box-shadow:var(--shadow-md); border-color:var(--navy); }
+  .portal-icon { width:50px; height:50px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0; }
+  .pi-fam  { background:#eef3fb; } .pi-adm { background:var(--green-bg); }
+  .pi-spon { background:var(--gold-bg); } .pi-pick { background:#f0eafb; }
+  .portal-text h3 { font-size:14px; font-weight:700; color:var(--navy); margin-bottom:3px; }
+  .portal-text p  { font-size:11px; color:var(--muted); line-height:1.4; }
+  .portal-arrow   { margin-left:auto; color:var(--navy); font-size:20px; opacity:0.35; flex-shrink:0; }
+
+  .home-footer { margin:8px 16px 24px; background:white; border-radius:14px; padding:14px 16px; border:1.5px solid var(--border); display:flex; align-items:center; gap:10px; box-shadow:var(--shadow-sm); }
+  .hf-text { font-size:11px; color:var(--muted); line-height:1.5; }
+  .hf-text strong { color:var(--navy); }
+
+  /* ══ FAMILY APPLICATION ══ */
+  .elig { border-radius:12px; padding:14px; margin:6px 0 16px; border:1.5px solid; }
+  .elig.pass { background:var(--green-bg); border-color:#a3d4b5; }
+  .elig-top { display:flex; align-items:center; gap:8px; margin-bottom:5px; }
+  .elig-ttl { font-size:12px; font-weight:700; color:var(--navy); }
+  .elig-det { font-size:11px; color:var(--muted); line-height:1.5; }
+  .elig-chip { display:inline-block; margin-top:8px; padding:3px 10px; border-radius:99px; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; background:var(--green); color:white; }
+
+  .child-card { background:white; border:1.5px solid var(--border); border-radius:12px; padding:12px 14px; margin-bottom:8px; display:flex; align-items:center; gap:12px; }
+  .cavi { width:40px; height:40px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0; }
+  .cavi.g { background:#fdeef0; } .cavi.b { background:#eef3fb; }
+  .cdet .cn { font-size:13px; font-weight:700; color:var(--text); }
+  .cdet .ca { font-size:11px; color:var(--muted); margin-top:1px; }
+  .cedit { margin-left:auto; color:var(--muted); font-size:14px; cursor:pointer; }
+  .add-child { width:100%; padding:11px; border:1.5px dashed var(--border); border-radius:12px; background:white; color:var(--navy); font-size:13px; font-weight:600; font-family:'Open Sans',sans-serif; cursor:pointer; text-align:center; margin-top:2px; transition:all 0.2s; }
+  .add-child:hover { border-color:var(--navy); background:#f0f4fb; }
+
+  /* Upload */
+  .upload-box { border:2px dashed var(--border); border-radius:12px; padding:22px 16px; text-align:center; background:white; cursor:pointer; transition:all 0.2s; margin-bottom:10px; }
+  .upload-box:hover { border-color:var(--navy); background:#f0f4fb; }
+
+  /* ══ GIFT REGISTRY ══ */
+  .child-tabs { display:flex; background:white; border-bottom:1px solid var(--border); overflow-x:auto; scrollbar-width:none; }
+  .child-tabs::-webkit-scrollbar { display:none; }
+  .ctab { flex-shrink:0; padding:12px 16px; font-size:12px; font-weight:600; color:var(--muted); border-bottom:2px solid transparent; cursor:pointer; transition:all 0.2s; white-space:nowrap; }
+  .ctab.active { color:var(--navy); border-bottom-color:var(--navy); }
+
+  .method-toggle { display:grid; grid-template-columns:1fr 1fr; gap:0; background:var(--lt-gray); border-radius:12px; padding:3px; margin-bottom:16px; }
+  .mtab { padding:9px 8px; border-radius:10px; text-align:center; font-size:12px; font-weight:600; color:var(--muted); cursor:pointer; transition:all 0.2s; }
+  .mtab.active { background:white; color:var(--navy); box-shadow:var(--shadow-sm); }
+
+  .gift-card { background:white; border:1.5px solid var(--border); border-radius:12px; padding:13px 14px; margin-bottom:8px; display:flex; align-items:flex-start; gap:12px; }
+  .gift-emoji { font-size:22px; flex-shrink:0; }
+  .gift-info  { flex:1; }
+  .gift-name  { font-size:13px; font-weight:700; color:var(--text); }
+  .gift-desc  { font-size:11px; color:var(--muted); margin-top:2px; line-height:1.4; }
+  .gift-price { display:inline-block; margin-top:6px; background:var(--green-bg); color:var(--green); font-size:10px; font-weight:700; padding:2px 8px; border-radius:99px; }
+  .gift-del   { color:var(--muted); font-size:14px; cursor:pointer; margin-left:auto; flex-shrink:0; }
+
+  .add-gift-form { background:var(--lt-gray); border-radius:14px; padding:14px; margin-bottom:10px; }
+  .add-gift-title { font-size:12px; font-weight:700; color:var(--navy); margin-bottom:10px; }
+
+  .amazon-panel { background:var(--amazon-bg); border:1.5px solid #ffd080; border-radius:14px; padding:16px; margin-bottom:14px; }
+  .amazon-header { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+  .amazon-logo   { background:var(--amazon); color:white; font-size:11px; font-weight:900; padding:4px 8px; border-radius:6px; }
+  .amazon-steps  { font-size:11px; color:#8a5800; line-height:1.7; }
+  .amazon-steps ol { padding-left:16px; }
+  .url-input-wrap { position:relative; margin-top:10px; }
+  .url-prefix { position:absolute; left:11px; top:50%; transform:translateY(-50%); font-size:12px; color:var(--muted); font-weight:600; }
+  .url-input { width:100%; padding:10px 12px 10px 82px; border:1.5px solid #ffd080; border-radius:10px; font-size:12px; font-family:'Open Sans',sans-serif; color:var(--text); background:white; outline:none; }
+  .btn-amazon { width:100%; padding:11px; margin-top:8px; background:var(--amazon); color:white; border:none; border-radius:10px; font-size:13px; font-weight:700; font-family:'Open Sans',sans-serif; cursor:pointer; }
+
+  .registry-status { background:white; border:1.5px solid var(--border); border-radius:12px; padding:12px 14px; margin-bottom:14px; display:flex; align-items:center; gap:10px; }
+
+  /* ══ ADMIN DASHBOARD ══ */
+  .kpi-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; padding:16px; }
+  .kpi { background:white; border-radius:14px; padding:16px 14px; box-shadow:var(--shadow-sm); border:1.5px solid var(--border); }
+  .kpi-num { font-family:'Merriweather',serif; font-size:30px; font-weight:700; }
+  .kpi-num.navy  { color:var(--navy); } .kpi-num.green { color:var(--green); }
+  .kpi-num.gold  { color:var(--gold); } .kpi-num.red   { color:var(--red); }
+  .kpi-label { font-size:10px; color:var(--muted); font-weight:600; margin-top:3px; text-transform:uppercase; letter-spacing:0.5px; }
+  .kpi-sub   { font-size:10px; color:var(--muted); margin-top:1px; }
+
+  .quick-actions { display:grid; grid-template-columns:1fr 1fr; gap:10px; padding:0 16px 6px; }
+  .action-btn { background:white; border:1.5px solid var(--border); border-radius:12px; padding:14px 10px; text-align:center; cursor:pointer; box-shadow:var(--shadow-sm); transition:all 0.2s; }
+  .action-btn:hover { transform:translateY(-2px); box-shadow:var(--shadow-md); border-color:var(--navy); }
+  .action-btn-icon  { font-size:22px; margin-bottom:6px; }
+  .action-btn-label { font-size:11px; font-weight:700; color:var(--navy); }
+
+  .queue-header { display:flex; justify-content:space-between; align-items:center; padding:14px 16px 8px; }
+  .queue-header h3 { font-size:13px; font-weight:700; color:var(--navy); }
+  .queue-filter { font-size:11px; font-weight:600; color:var(--navy); background:var(--lt-gray); padding:4px 10px; border-radius:99px; cursor:pointer; }
+
+  .app-row { background:white; margin:0 16px 8px; border-radius:12px; padding:12px 14px; display:flex; align-items:center; gap:12px; box-shadow:var(--shadow-sm); border:1.5px solid var(--border); border-left:4px solid transparent; cursor:pointer; transition:all 0.2s; }
+  .app-row:hover { transform:translateX(3px); box-shadow:var(--shadow-md); }
+  .app-row.flagged  { border-left-color:var(--red); }
+  .app-row.pending  { border-left-color:var(--gold); }
+  .app-row.approved { border-left-color:var(--green); }
+  .app-row-avi { width:40px; height:40px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
+  .app-row-avi.flagged  { background:#fdecea; } .app-row-avi.pending  { background:var(--gold-bg); } .app-row-avi.approved { background:var(--green-bg); }
+  .app-row-info { flex:1; }
+  .app-row-name { font-size:13px; font-weight:700; color:var(--navy); }
+  .app-row-meta { font-size:11px; color:var(--muted); margin-top:2px; }
+  .status-pill  { font-size:10px; font-weight:700; padding:4px 9px; border-radius:99px; white-space:nowrap; text-transform:uppercase; letter-spacing:0.5px; }
+  .status-pill.flagged  { background:#fdecea; color:var(--red); }
+  .status-pill.pending  { background:var(--gold-bg); color:#8a6300; }
+  .status-pill.approved { background:var(--green-bg); color:var(--green); }
+
+  /* ══ ADMIN APPROVE DETAIL ══ */
+  .detail-section { margin-bottom:16px; }
+  .det-title { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:1.5px; color:var(--muted); margin-bottom:10px; padding-bottom:6px; border-bottom:1px solid var(--border); }
+  .det-row { display:flex; justify-content:space-between; padding:7px 0; border-bottom:1px solid var(--lt-gray); }
+  .det-row:last-child { border-bottom:none; }
+  .dr-lbl { font-size:12px; color:var(--muted); }
+  .dr-val { font-size:12px; font-weight:600; color:var(--text); text-align:right; }
+
+  .child-row { background:white; border:1.5px solid var(--border); border-radius:12px; padding:12px 14px; margin-bottom:8px; display:flex; align-items:center; gap:12px; }
+  .cr-avi { width:38px; height:38px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0; }
+  .cr-avi.g { background:#fdeef0; } .cr-avi.b { background:#eef3fb; }
+  .cr-info { flex:1; }
+  .cr-name { font-size:13px; font-weight:700; color:var(--text); }
+  .cr-meta { font-size:11px; color:var(--muted); margin-top:1px; }
+  .cr-badge { font-family:'Merriweather',serif; font-size:11px; font-weight:700; padding:4px 10px; border-radius:8px; }
+  .cr-badge.assigned { background:var(--navy); color:white; }
+  .cr-badge.pending  { background:var(--lt-gray); color:var(--muted); border:1.5px dashed var(--border); }
+
+  .approve-panel { background:white; border:1.5px solid var(--border); border-radius:16px; overflow:hidden; margin-bottom:12px; }
+  .approve-panel-hdr { background:var(--navy); padding:14px 16px; font-size:13px; font-weight:700; color:white; display:flex; align-items:center; gap:8px; }
+  .approve-panel-body { padding:16px; }
+
+  .fnum-wrap { display:flex; gap:10px; align-items:center; margin-bottom:12px; }
+  .fnum-pre  { font-family:'Merriweather',serif; font-size:20px; font-weight:700; color:var(--navy); flex-shrink:0; }
+  .fnum-input { flex:1; padding:12px 14px; border:2px solid var(--navy); border-radius:10px; font-family:'Merriweather',serif; font-size:22px; font-weight:700; color:var(--navy); background:white; outline:none; text-align:center; letter-spacing:2px; }
+  .fnum-input::placeholder { color:var(--border); }
+
+  .cid-preview { background:var(--lt-gray); border-radius:10px; padding:12px 14px; margin-bottom:12px; }
+  .cid-label { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--muted); margin-bottom:8px; }
+  .cid-row   { display:flex; align-items:center; gap:8px; margin-bottom:6px; }
+  .cid-row:last-child { margin-bottom:0; }
+  .cid-avi   { font-size:16px; }
+  .cid-name  { font-size:12px; color:var(--text); flex:1; }
+  .cid-id    { font-family:'Merriweather',serif; font-size:13px; font-weight:700; color:var(--navy); background:white; padding:3px 10px; border-radius:8px; border:1.5px solid var(--border); }
+
+  .email-preview { background:#f0f4fb; border:1.5px solid #c0d0e8; border-radius:12px; padding:14px; margin-bottom:10px; }
+  .ep-label   { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--navy); margin-bottom:8px; }
+  .ep-subject { font-size:12px; font-weight:700; color:var(--navy); margin-bottom:6px; }
+  .ep-body    { font-size:11px; color:var(--text); line-height:1.8; }
+  .ep-hl      { color:var(--navy); font-weight:700; }
+
+  /* ══ SPONSOR PORTAL ══ */
+  .chips { display:flex; gap:8px; padding:12px 16px; overflow-x:auto; scrollbar-width:none; background:white; border-bottom:1px solid var(--border); }
+  .chips::-webkit-scrollbar { display:none; }
+  .chip { flex-shrink:0; padding:6px 13px; border-radius:99px; font-size:11px; font-weight:600; cursor:pointer; border:1.5px solid var(--border); background:white; color:var(--muted); transition:all 0.2s; }
+  .chip.on { background:var(--navy); border-color:var(--navy); color:white; }
+
+  .scard { background:white; margin:10px 16px 0; border-radius:16px; overflow:hidden; box-shadow:var(--shadow-sm); border:1.5px solid var(--border); transition:all 0.2s; }
+  .scard:hover { box-shadow:var(--shadow-md); }
+  .scard.taken { opacity:0.55; }
+  .scard-hdr  { padding:16px; display:flex; gap:14px; align-items:flex-start; cursor:pointer; }
+  .sc-avi { width:52px; height:52px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:26px; flex-shrink:0; }
+  .sc-avi.g { background:#fdeef0; } .sc-avi.b { background:#eef3fb; }
+  .sc-id  { font-family:'Merriweather',serif; font-size:16px; font-weight:700; color:var(--navy); letter-spacing:0.5px; }
+  .sc-age { font-size:11px; color:var(--muted); margin-top:3px; }
+  .sc-tags { display:flex; gap:5px; flex-wrap:wrap; margin-top:8px; }
+  .sc-tag  { background:var(--lt-gray); color:var(--navy); font-size:10px; font-weight:600; padding:3px 8px; border-radius:8px; text-transform:uppercase; letter-spacing:0.5px; }
+  .sc-tag.amz { background:var(--amazon-bg); color:#8a5800; }
+  .expand-icon { color:var(--muted); font-size:18px; align-self:center; flex-shrink:0; transition:transform 0.25s; }
+  .scard.expanded .expand-icon { transform:rotate(90deg); }
+
+  .wish-list { border-top:1px solid var(--lt-gray); padding:14px 16px; display:none; animation:fadeIn 0.2s ease; }
+  .scard.expanded .wish-list { display:block; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(-4px)} to{opacity:1;transform:translateY(0)} }
+  .wl-header { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--muted); margin-bottom:10px; }
+  .wl-item   { display:flex; align-items:flex-start; gap:10px; padding:10px 0; border-bottom:1px solid var(--lt-gray); }
+  .wl-item:last-of-type { border-bottom:none; }
+  .wl-emoji  { font-size:20px; flex-shrink:0; margin-top:1px; }
+  .wl-name   { font-size:13px; font-weight:600; color:var(--text); }
+  .wl-note   { font-size:11px; color:var(--muted); margin-top:2px; line-height:1.4; }
+  .wl-price  { font-size:11px; font-weight:700; color:var(--green); margin-top:3px; }
+  .amz-link  { display:flex; align-items:center; gap:8px; background:var(--amazon-bg); border:1px solid #ffd080; border-radius:10px; padding:10px 12px; margin-bottom:10px; cursor:pointer; }
+  .amz-logo  { background:var(--amazon); color:white; font-size:10px; font-weight:900; padding:3px 6px; border-radius:5px; }
+  .amz-text  { font-size:12px; color:#7a4800; font-weight:600; flex:1; }
+  .amz-arr   { color:var(--amazon); font-size:14px; }
+  .btn-sponsor { width:100%; padding:13px; margin-top:12px; background:var(--navy); color:white; border:none; border-radius:12px; font-size:13px; font-weight:700; font-family:'Open Sans',sans-serif; cursor:pointer; transition:all 0.2s; }
+  .btn-sponsor:hover { background:var(--navy-mid); }
+  .taken-msg { background:var(--green-bg); border-radius:10px; padding:10px 14px; margin-top:10px; text-align:center; font-size:12px; font-weight:700; color:var(--green); }
+
+  /* ══ SUCCESS ══ */
+  .success-wrap { display:flex; flex-direction:column; align-items:center; padding:48px 24px; text-align:center; background:var(--off-white); min-height:calc(100% - 44px); }
+  .success-circle { width:88px; height:88px; background:var(--navy); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:40px; margin-bottom:22px; box-shadow:0 8px 32px rgba(26,42,74,0.25); animation:popIn 0.45s cubic-bezier(0.175,0.885,0.32,1.275); }
+  @keyframes popIn { from{transform:scale(0);opacity:0} to{transform:scale(1);opacity:1} }
+
+  /* ══ NAV PILLS ══ */
+  .npills { display:flex; gap:6px; flex-wrap:wrap; justify-content:center; max-width:375px; }
+  .np { padding:7px 14px; border-radius:99px; border:none; font-size:11px; font-weight:700; font-family:'Open Sans',sans-serif; cursor:pointer; transition:all 0.2s; white-space:nowrap; }
+  .np:hover { transform:translateY(-2px); }
+  .np-navy  { background:var(--navy); color:white; }
+  .np-lt    { background:var(--lt-gray); color:var(--navy); }
+  .np-green { background:var(--green-bg); color:var(--green); }
+  .np-gold  { background:var(--gold-bg); color:#6b4f00; }
+  .np-red   { background:#fdecea; color:var(--red); }
+</style>
+</head>
+<body>
+
+<div class="pw">
+  <div class="plabel">Canton Goodfellows App</div>
+  <div class="phone">
+    <div class="notch"></div>
+
+    <!-- ════════════════════════════
+         HOME
+    ════════════════════════════ -->
+    <div class="scr on" id="s-home">
+      <div class="sbar lt" style="background:var(--navy)">
+        <span>9:41</span><div class="si"><span>●●●</span><span>WiFi</span><span>🔋</span></div>
+      </div>
+      <div class="home-hero">
+        <div class="logo-badge">
+          <img src="https://cantongoodfellows.org/wp-content/uploads/2016/07/logo.png"
+               onerror="this.style.display='none';this.parentNode.innerHTML='🎁';" alt="Logo" />
+        </div>
+        <div class="home-tagline">Canton Township, Michigan</div>
+        <div class="home-title">No Child Without<br><span>a Christmas</span></div>
+        <div class="home-year">2025 Program — Est. 1940s</div>
+      </div>
+      <div class="stat-strip">
+        <div class="stat-cell"><div class="stat-num">111</div><div class="stat-lbl">Families</div></div>
+        <div class="stat-cell"><div class="stat-num">284</div><div class="stat-lbl">Children</div></div>
+        <div class="stat-cell"><div class="stat-num">284</div><div class="stat-lbl">Sponsored</div></div>
+      </div>
+      <div class="portals">
+        <div class="portals-heading">How can we help you?</div>
+        <div class="portal-card" id="apply-portal-card" onclick="goApply()">
+          <div class="portal-icon pi-fam" id="apply-portal-icon">👨‍👩‍👧‍👦</div>
+          <div class="portal-text">
+            <h3>Apply for Assistance</h3>
+            <p id="apply-portal-sub">Canton families with children 18 &amp; under in need of Christmas support</p>
+          </div>
+          <div class="portal-arrow" id="apply-portal-arrow">›</div>
+        </div>
+        <div class="portal-card" onclick="go('s-admin')">
+          <div class="portal-icon pi-adm">⚙️</div>
+          <div class="portal-text"><h3>Admin Dashboard</h3><p>Review applications, manage approvals &amp; run reports</p></div>
+          <div class="portal-arrow">›</div>
+        </div>
+        <div class="portal-card" onclick="go('s-sponsor')">
+          <div class="portal-icon pi-spon">⭐</div>
+          <div class="portal-text"><h3>Sponsor a Child</h3><p>Choose a child and make their Christmas special</p></div>
+          <div class="portal-arrow">›</div>
+        </div>
+        <div class="portal-card" onclick="go('s-home')">
+          <div class="portal-icon pi-pick">📦</div>
+          <div class="portal-text"><h3>Pickup Day Check-In</h3><p>Volunteer tools for Family Pickup Day in December</p></div>
+          <div class="portal-arrow">›</div>
+        </div>
+        <div class="portal-card" onclick="go('s-about')">
+          <div class="portal-icon" style="background:#f0eafb;">ℹ️</div>
+          <div class="portal-text"><h3>About Goodfellows</h3><p>Our mission, history, board, and how the program works</p></div>
+          <div class="portal-arrow">›</div>
+        </div>
+        <div class="portal-card" onclick="go('s-involved')">
+          <div class="portal-icon" style="background:#fff0f0;">❤️</div>
+          <div class="portal-text"><h3>Donate &amp; Get Involved</h3><p>Sponsor a child, volunteer, donate, or shop with Kroger</p></div>
+          <div class="portal-arrow">›</div>
+        </div>
+        <div class="portal-card" onclick="go('s-status-check')">
+          <div class="portal-icon" style="background:#f0faf4;">🔍</div>
+          <div class="portal-text"><h3>Check My Application</h3><p>Already applied? Look up your current status here</p></div>
+          <div class="portal-arrow">›</div>
+        </div>
+      </div>
+      <div class="home-footer">
+        <span style="font-size:22px">📞</span>
+        <div class="hf-text"><strong>Questions?</strong> Call 734-664-1044 or email cantongoodfellows [at] gmail.com</div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════
+         APPLICATIONS CLOSED
+    ════════════════════════════ -->
+    <div class="scr" id="s-closed">
+      <div class="sbar lt" style="background:var(--navy)">
+        <span>9:41</span><div class="si"><span>●●●</span><span>🔋</span></div>
+      </div>
+      <div class="hero">
+        <button class="back" onclick="go('s-home')">←</button>
+        <h2>Apply for Assistance</h2>
+        <p>2025 Christmas Program</p>
+      </div>
+
+      <div class="fb" style="display:flex;flex-direction:column;align-items:center;text-align:center;padding-top:32px;">
+
+        <!-- Status icon -->
+        <div style="width:88px;height:88px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:40px;margin-bottom:22px;" id="closed-icon-wrap">🔒</div>
+
+        <div style="font-family:'Merriweather',serif;font-size:20px;font-weight:700;color:var(--navy);margin-bottom:10px;" id="closed-headline">Applications are Closed</div>
+        <div style="font-size:13px;color:var(--muted);line-height:1.7;max-width:290px;margin:0 auto 24px;" id="closed-body">
+          The 2025 application window runs from <strong style="color:var(--navy)">October 1</strong> to <strong style="color:var(--navy)">November 15</strong>. Please check back when the window opens.
+        </div>
+
+        <!-- Countdown / date info box -->
+        <div style="background:white;border:1.5px solid var(--border);border-radius:16px;padding:18px;width:100%;margin-bottom:14px;" id="closed-datebox">
+          <div style="font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);font-weight:700;margin-bottom:12px;">2025 Application Window</div>
+          <div style="display:flex;justify-content:space-around;">
+            <div style="text-align:center;">
+              <div style="font-family:'Merriweather',serif;font-size:22px;font-weight:700;color:var(--navy);">Oct 1</div>
+              <div style="font-size:10px;color:var(--muted);margin-top:3px;text-transform:uppercase;letter-spacing:0.5px;">Opens</div>
+            </div>
+            <div style="color:var(--border);font-size:24px;align-self:center;">→</div>
+            <div style="text-align:center;">
+              <div style="font-family:'Merriweather',serif;font-size:22px;font-weight:700;color:var(--navy);">Nov 15</div>
+              <div style="font-size:10px;color:var(--muted);margin-top:3px;text-transform:uppercase;letter-spacing:0.5px;">Closes</div>
+            </div>
+          </div>
+          <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);line-height:1.6;" id="closed-countdown"></div>
+        </div>
+
+        <!-- If currently submitted, can still check status -->
+        <div style="background:var(--lt-gray);border-radius:14px;padding:16px;width:100%;margin-bottom:14px;text-align:left;">
+          <div style="font-size:12px;font-weight:700;color:var(--navy);margin-bottom:6px;">Already submitted an application?</div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.6;">Approved and denied emails will be sent by <strong style="color:var(--navy)">November 1</strong>. If you haven't received an email by the first week of November, contact us below.</div>
+        </div>
+
+        <!-- Contact info -->
+        <div style="background:var(--navy);border-radius:14px;padding:16px;width:100%;text-align:left;">
+          <div style="font-size:12px;font-weight:700;color:white;margin-bottom:10px;">📞 Need Help?</div>
+          <div style="font-size:12px;color:rgba(255,255,255,0.75);line-height:1.8;">
+            cantongoodfellows [at] gmail.com<br>
+            734-664-1044
+          </div>
+        </div>
+
+        <button class="btn-secondary" onclick="go('s-home')" style="margin-top:16px;">← Back to Home</button>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════
+         STEP 1: HOUSEHOLD INFO
+    ════════════════════════════ -->
+    <div class="scr" id="s-step1">
+      <div class="sbar lt" style="background:var(--navy)">
+        <span>9:41</span><div class="si"><span>●●●</span><span>🔋</span></div>
+      </div>
+      <div class="hero">
+        <button class="back" onclick="go('s-home')">←</button>
+        <h2>Apply for Assistance</h2><p>2025 Christmas Program</p>
+      </div>
+      <div class="prog-wrap">
+        <div class="prog-meta"><span class="sn">Step 1 of 5 — Household Info</span><span class="sc">20% complete</span></div>
+        <div class="prog-track"><div class="prog-fill" style="width:20%"></div></div>
+        <div class="dots"><div class="dot active"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+      </div>
+      <div class="fb">
+        <div class="fgroup"><label class="flabel">Full Name</label><input class="finput" placeholder="Your full legal name" /></div>
+        <div class="fgroup"><label class="flabel">Email Address</label><input class="finput" type="email" placeholder="you@email.com" /></div>
+        <div class="fgroup"><label class="flabel">Phone Number</label><input class="finput" type="tel" placeholder="(734) 555-0000" /></div>
+        <div class="fgroup"><label class="flabel">Canton Address</label><input class="finput" placeholder="Street address" /></div>
+        <div class="frow">
+          <div class="fgroup"><label class="flabel">Household Size</label>
+            <select class="finput"><option>Select…</option><option>2</option><option>3</option><option selected>4</option><option>5</option><option>6+</option></select>
+          </div>
+          <div class="fgroup"><label class="flabel">Annual Income</label><input class="finput" placeholder="$0,000" /></div>
+        </div>
+        <div class="elig pass" style="margin-top:4px;">
+          <div class="elig-top"><span style="font-size:16px">✅</span><div class="elig-ttl">Income Eligibility Check</div></div>
+          <div class="elig-det">Family of 4 · $38,000/yr · Limit: $62,400 (200% FPL)</div>
+          <div class="elig-chip">✓ Eligible</div>
+        </div>
+        <button class="btn-primary" onclick="go('s-step2')">Continue →</button>
+        <button class="btn-secondary" onclick="go('s-home')">Cancel</button>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════
+         STEP 2: CHILDREN
+    ════════════════════════════ -->
+    <div class="scr" id="s-step2">
+      <div class="sbar lt" style="background:var(--navy)">
+        <span>9:41</span><div class="si"><span>●●●</span><span>🔋</span></div>
+      </div>
+      <div class="hero">
+        <button class="back" onclick="go('s-step1')">←</button>
+        <h2>Apply for Assistance</h2><p>2025 Christmas Program</p>
+      </div>
+      <div class="prog-wrap">
+        <div class="prog-meta"><span class="sn">Step 2 of 5 — Your Children</span><span class="sc">40% complete</span></div>
+        <div class="prog-track"><div class="prog-fill" style="width:40%"></div></div>
+        <div class="dots"><div class="dot done"></div><div class="dot active"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+      </div>
+      <div class="fb">
+        <label class="flabel" style="margin-bottom:12px;">Children in your household <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--muted)">(ages 0–18)</span></label>
+        <div class="child-card">
+          <div class="cavi g">👧</div>
+          <div class="cdet"><div class="cn">Emma</div><div class="ca">Age 7 · Girl</div></div>
+          <div class="cedit">✎</div>
+        </div>
+        <div class="child-card">
+          <div class="cavi b">👦</div>
+          <div class="cdet"><div class="cn">Marcus</div><div class="ca">Age 11 · Boy</div></div>
+          <div class="cedit">✎</div>
+        </div>
+        <button class="add-child">+ Add Another Child</button>
+        <div class="divider"></div>
+        <button class="btn-primary" onclick="go('s-step3')">Continue to Gift Wish Lists →</button>
+        <button class="btn-secondary">Save &amp; Come Back Later</button>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════
+         STEP 3: GIFT REGISTRY
+    ════════════════════════════ -->
+    <div class="scr" id="s-step3">
+      <div class="sbar lt" style="background:var(--navy)">
+        <span>9:41</span><div class="si"><span>●●●</span><span>🔋</span></div>
+      </div>
+      <div class="hero">
+        <button class="back" onclick="go('s-step2')">←</button>
+        <h2>Gift Wish Lists</h2><p>Help your sponsor shop for the right gifts</p>
+      </div>
+      <div class="prog-wrap">
+        <div class="prog-meta"><span class="sn">Step 3 of 5 — Gift Wish Lists</span><span class="sc">60% complete</span></div>
+        <div class="prog-track"><div class="prog-fill" style="width:60%"></div></div>
+        <div class="dots"><div class="dot done"></div><div class="dot done"></div><div class="dot active"></div><div class="dot"></div><div class="dot"></div></div>
+      </div>
+      <div class="child-tabs">
+        <div class="ctab active" onclick="switchChild(0,this)">👧 Emma (7)</div>
+        <div class="ctab" onclick="switchChild(1,this)">👦 Marcus (11)</div>
+      </div>
+
+      <div id="cp-0" class="fb">
+        <div style="background:white;border:1.5px solid var(--border);border-radius:14px;padding:16px;margin-bottom:14px;">
+          <div style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:6px;">🎁 Build Emma's Wish List</div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.55;">Add gift ideas so her sponsor knows what she'd love. Sponsors only see her age and gender — not her name.</div>
+        </div>
+        <div class="method-toggle">
+          <div class="mtab active" onclick="switchMethod('manual',this)">✏️ Add Manually</div>
+          <div class="mtab" onclick="switchMethod('amazon',this)">📦 Amazon List</div>
+        </div>
+        <div id="method-manual">
+          <div class="gift-card">
+            <div class="gift-emoji">🎨</div>
+            <div class="gift-info"><div class="gift-name">Art Supplies Set</div><div class="gift-desc">Colored pencils, markers, sketchpad — she loves drawing</div><span class="gift-price">~$20–$35</span></div>
+            <div class="gift-del">🗑</div>
+          </div>
+          <div class="gift-card">
+            <div class="gift-emoji">🧩</div>
+            <div class="gift-info"><div class="gift-name">LEGO Friends Set</div><div class="gift-desc">Any set from the Friends series, age 6+</div><span class="gift-price">~$30–$50</span></div>
+            <div class="gift-del">🗑</div>
+          </div>
+          <div class="add-gift-form">
+            <div class="add-gift-title">+ Add a Gift Idea</div>
+            <div class="fgroup"><label class="flabel">Gift Name</label><input class="finput" placeholder="e.g. Barbie Dreamhouse" style="font-size:13px;padding:9px 12px;" /></div>
+            <div class="fgroup"><label class="flabel">Notes for the Sponsor</label><input class="finput" placeholder="Color, size, style…" style="font-size:13px;padding:9px 12px;" /></div>
+            <div class="fgroup"><label class="flabel">Price Range</label>
+              <select class="finput" style="font-size:13px;padding:9px 12px;"><option>Under $20</option><option selected>$20–$35</option><option>$35–$50</option><option>$50–$75</option><option>$75+</option></select>
+            </div>
+            <button class="btn-primary" style="padding:11px;font-size:13px;margin-top:2px;">Add Gift</button>
+          </div>
+        </div>
+        <div id="method-amazon" style="display:none;">
+          <div class="amazon-panel">
+            <div class="amazon-header"><span class="amazon-logo">amazon</span><span style="font-size:13px;font-weight:700;color:#7a4800;">Link an Amazon Wish List</span></div>
+            <div class="amazon-steps"><ol><li>Go to Amazon and create a Wish List for your child</li><li>Add gifts and set quantities</li><li>Make the list <strong>Public</strong></li><li>Copy the link and paste it below</li></ol></div>
+            <div class="url-input-wrap"><span class="url-prefix">amazon.com/</span><input class="url-input" placeholder="hz/wishlist/ls/XXXXXXXX" /></div>
+            <button class="btn-amazon">🔗 Connect Wish List</button>
+          </div>
+        </div>
+        <div class="registry-status">
+          <div style="font-size:20px;">✅</div>
+          <div style="font-size:12px;color:var(--muted)"><strong style="color:var(--navy)">2 gifts added</strong> for Emma · Switch to Marcus's tab to add his list.</div>
+        </div>
+        <button class="btn-primary" onclick="go('s-step4')">Continue to Documents →</button>
+        <button class="btn-secondary">Save &amp; Come Back Later</button>
+      </div>
+
+      <div id="cp-1" class="fb" style="display:none;">
+        <div style="background:white;border:1.5px solid var(--border);border-radius:14px;padding:16px;margin-bottom:14px;">
+          <div style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:6px;">🎁 Build Marcus's Wish List</div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.55;">Add gift ideas so his sponsor knows what he'd love.</div>
+        </div>
+        <div class="method-toggle"><div class="mtab active">✏️ Add Manually</div><div class="mtab">📦 Amazon List</div></div>
+        <div class="gift-card">
+          <div class="gift-emoji">⚽</div>
+          <div class="gift-info"><div class="gift-name">Soccer Gear</div><div class="gift-desc">Size 5 ball + shin guards, plays recreationally</div><span class="gift-price">~$25–$45</span></div>
+          <div class="gift-del">🗑</div>
+        </div>
+        <button class="add-child" style="margin-top:0;">+ Add Another Gift for Marcus</button>
+        <div class="divider"></div>
+        <button class="btn-primary" onclick="go('s-step4')">Continue to Documents →</button>
+        <button class="btn-secondary">Save &amp; Come Back Later</button>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════
+         STEP 4: DOCUMENTS
+    ════════════════════════════ -->
+    <div class="scr" id="s-step4">
+      <div class="sbar lt" style="background:var(--navy)">
+        <span>9:41</span><div class="si"><span>●●●</span><span>🔋</span></div>
+      </div>
+      <div class="hero">
+        <button class="back" onclick="go('s-step3')">←</button>
+        <h2>Upload Documents</h2><p>2025 Christmas Program</p>
+      </div>
+      <div class="prog-wrap">
+        <div class="prog-meta"><span class="sn">Step 4 of 5 — Documents</span><span class="sc">80% complete</span></div>
+        <div class="prog-track"><div class="prog-fill" style="width:80%"></div></div>
+        <div class="dots"><div class="dot done"></div><div class="dot done"></div><div class="dot done"></div><div class="dot active"></div><div class="dot"></div></div>
+      </div>
+      <div class="fb">
+        <div class="ibox blue" style="margin-bottom:16px;">
+          <div class="ibox-top"><span style="font-size:16px">ℹ️</span><div class="ibox-ttl">Required Documents</div></div>
+          <div class="ibox-body">Please upload clear photos or scans. Accepted: utility bill, lease, bank statement (residency) · pay stub, tax return, benefit letter (income).</div>
+        </div>
+        <div class="upload-box" style="border-color:var(--green);background:var(--green-bg);">
+          <div style="font-size:28px;margin-bottom:8px;">🏠</div>
+          <div style="font-size:13px;font-weight:700;color:var(--green);">✓ Residency Uploaded</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:4px;">utility_bill_oct2025.pdf</div>
+        </div>
+        <div class="upload-box">
+          <div style="font-size:28px;margin-bottom:8px;">💵</div>
+          <div style="font-size:13px;font-weight:700;color:var(--navy);">Proof of Income</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:4px;">Tap to upload a file or take a photo</div>
+        </div>
+        <button class="btn-primary" onclick="go('s-step5')">Review &amp; Submit →</button>
+        <button class="btn-secondary">Save &amp; Come Back Later</button>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════
+         STEP 5: REVIEW & SUBMIT
+    ════════════════════════════ -->
+    <div class="scr" id="s-step5">
+      <div class="sbar lt" style="background:var(--navy)">
+        <span>9:41</span><div class="si"><span>●●●</span><span>🔋</span></div>
+      </div>
+      <div class="hero">
+        <button class="back" onclick="go('s-step4')">←</button>
+        <h2>Review &amp; Submit</h2><p>2025 Christmas Program</p>
+      </div>
+      <div class="prog-wrap">
+        <div class="prog-meta"><span class="sn">Step 5 of 5 — Review</span><span class="sc">Almost done!</span></div>
+        <div class="prog-track"><div class="prog-fill" style="width:95%"></div></div>
+        <div class="dots"><div class="dot done"></div><div class="dot done"></div><div class="dot done"></div><div class="dot done"></div><div class="dot active"></div></div>
+      </div>
+      <div class="fb">
+        <div class="detail-section">
+          <div class="det-title">Your Information</div>
+          <div class="det-row"><span class="dr-lbl">Name</span><span class="dr-val">Sarah Johnson</span></div>
+          <div class="det-row"><span class="dr-lbl">Address</span><span class="dr-val">Canton, MI ✓</span></div>
+          <div class="det-row"><span class="dr-lbl">Household Size</span><span class="dr-val">4 people</span></div>
+          <div class="det-row"><span class="dr-lbl">Annual Income</span><span class="dr-val">$38,000</span></div>
+          <div class="det-row"><span class="dr-lbl">Eligibility</span><span class="dr-val" style="color:var(--green);font-weight:700;">✓ Eligible</span></div>
+        </div>
+        <div class="detail-section">
+          <div class="det-title">Children &amp; Wish Lists</div>
+          <div class="child-card">
+            <div class="cavi g">👧</div>
+            <div class="cr-info"><div class="cr-name">Emma, Age 7</div><div class="cr-meta">2 gifts on wish list</div></div>
+            <div class="cr-badge pending">ID pending</div>
+          </div>
+          <div class="child-card">
+            <div class="cavi b">👦</div>
+            <div class="cr-info"><div class="cr-name">Marcus, Age 11</div><div class="cr-meta">1 gift on wish list</div></div>
+            <div class="cr-badge pending">ID pending</div>
+          </div>
+        </div>
+        <div class="detail-section">
+          <div class="det-title">Documents</div>
+          <div class="det-row"><span class="dr-lbl">Residency</span><span class="dr-val" style="color:var(--green);">✓ Uploaded</span></div>
+          <div class="det-row"><span class="dr-lbl">Income</span><span class="dr-val" style="color:var(--red);">⚠ Missing</span></div>
+        </div>
+        <div class="ibox gold">
+          <div class="ibox-top"><span style="font-size:16px">⚠️</span><div class="ibox-ttl">Income Document Missing</div></div>
+          <div class="ibox-body">You can still submit — but your application won't be reviewed until all documents are uploaded. You can add it after submitting.</div>
+        </div>
+        <button class="btn-primary" onclick="go('s-submitted')">Submit Application</button>
+        <button class="btn-secondary" onclick="go('s-step4')">← Go Back &amp; Upload</button>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════
+         SUBMITTED CONFIRMATION
+    ════════════════════════════ -->
+    <div class="scr" id="s-submitted">
+      <div class="sbar dk"></div>
+      <div class="success-wrap">
+        <div class="success-circle">🎄</div>
+        <div style="font-family:'Merriweather',serif;font-size:22px;font-weight:700;color:var(--navy);margin-bottom:10px;">Application Submitted!</div>
+        <div style="font-size:13px;color:var(--muted);line-height:1.7;max-width:290px;margin:0 auto 24px;">Your application is under review. You'll receive an email by <strong style="color:var(--navy)">November 1</strong> with your decision.</div>
+
+        <div style="background:var(--lt-gray);border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:10px;margin-bottom:10px;width:100%;border:1.5px solid var(--border);">
+          <span style="font-size:18px;">📋</span>
+          <div>
+            <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-weight:700;">Submission Reference</div>
+            <div style="font-family:'Merriweather',serif;font-size:15px;font-weight:700;color:var(--navy);">CGF-2025-0847</div>
+            <div style="font-size:10px;color:var(--muted);margin-top:2px;">Save this number in case you need to contact us</div>
+          </div>
+        </div>
+
+        <div class="ibox blue" style="width:100%;text-align:left;">
+          <div class="ibox-top"><span style="font-size:16px">ℹ️</span><div class="ibox-ttl">Your Family Number</div></div>
+          <div class="ibox-body">Your family number and child IDs (e.g. <strong>F103-A</strong>) will be assigned by our committee when approved — included in your approval email.</div>
+        </div>
+
+        <div style="background:white;border:1.5px solid var(--border);border-radius:14px;padding:14px 16px;width:100%;margin-top:4px;text-align:left;">
+          <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-weight:700;margin-bottom:8px;">Children Submitted</div>
+          <div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--lt-gray);">
+            <span style="font-size:18px;">👧</span>
+            <div style="flex:1;"><div style="font-size:12px;font-weight:700;color:var(--text);">Emma, Age 7</div><div style="font-size:11px;color:var(--muted);">2 gifts on wish list</div></div>
+            <div style="font-size:11px;font-weight:700;color:var(--muted);background:var(--lt-gray);padding:3px 8px;border-radius:8px;">ID pending</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;padding:6px 0;">
+            <span style="font-size:18px;">👦</span>
+            <div style="flex:1;"><div style="font-size:12px;font-weight:700;color:var(--text);">Marcus, Age 11</div><div style="font-size:11px;color:var(--muted);">1 gift on wish list</div></div>
+            <div style="font-size:11px;font-weight:700;color:var(--muted);background:var(--lt-gray);padding:3px 8px;border-radius:8px;">ID pending</div>
+          </div>
+        </div>
+        <button class="btn-primary" onclick="go('s-home')" style="margin-top:20px;width:100%;">Back to Home</button>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════
+         ADMIN DASHBOARD
+    ════════════════════════════ -->
+    <div class="scr" id="s-admin">
+      <div class="sbar lt" style="background:var(--navy-dark)">
+        <span>9:41</span><div class="si"><span>●●●</span><span>🔋</span></div>
+      </div>
+      <div class="hero" style="background:var(--navy-dark);">
+        <button class="back" onclick="go('s-home')">←</button>
+        <h2>Admin Dashboard</h2><p>2025 Program · 3 volunteers active</p>
+      </div>
+      <div class="kpi-grid">
+        <div class="kpi"><div class="kpi-num green">87</div><div class="kpi-label">Approved</div><div class="kpi-sub">Emails sent ✓</div></div>
+        <div class="kpi"><div class="kpi-num gold">14</div><div class="kpi-label">Pending Review</div><div class="kpi-sub">Auto-eligible</div></div>
+        <div class="kpi"><div class="kpi-num red">6</div><div class="kpi-label">Needs Attention</div><div class="kpi-sub">Missing docs</div></div>
+        <div class="kpi"><div class="kpi-num navy">214</div><div class="kpi-label">Total Children</div><div class="kpi-sub">All applications</div></div>
+      </div>
+      <div class="sec-label">Quick Actions</div>
+      <div class="quick-actions">
+        <div class="action-btn"><div class="action-btn-icon">📊</div><div class="action-btn-label">Export to Excel</div></div>
+        <div class="action-btn"><div class="action-btn-icon">📧</div><div class="action-btn-label">Send Bulk Emails</div></div>
+        <div class="action-btn"><div class="action-btn-icon">📅</div><div class="action-btn-label">Pickup Setup</div></div>
+        <div class="action-btn"><div class="action-btn-icon">👥</div><div class="action-btn-label">Sponsor Status</div></div>
+      </div>
+      <div class="queue-header"><h3>Applications Queue</h3><div class="queue-filter">Filter ▾</div></div>
+      <div class="app-row flagged" onclick="go('s-admin-detail')">
+        <div class="app-row-avi flagged">⚠️</div>
+        <div class="app-row-info"><div class="app-row-name">Johnson Family</div><div class="app-row-meta">2 children · Missing income doc</div></div>
+        <div class="status-pill flagged">Missing Docs</div>
+      </div>
+      <div class="app-row pending">
+        <div class="app-row-avi pending">⏳</div>
+        <div class="app-row-info"><div class="app-row-name">Martinez Family</div><div class="app-row-meta">2 children · Auto-eligible ✓</div></div>
+        <div class="status-pill pending">Pending</div>
+      </div>
+      <div class="app-row approved">
+        <div class="app-row-avi approved">✅</div>
+        <div class="app-row-info"><div class="app-row-name">Williams Family — F101</div><div class="app-row-meta">4 children · Approved Nov 1</div></div>
+        <div class="status-pill approved">Approved</div>
+      </div>
+      <div class="app-row approved">
+        <div class="app-row-avi approved">✅</div>
+        <div class="app-row-info"><div class="app-row-name">Thompson Family — F102</div><div class="app-row-meta">1 child · Approved Nov 1</div></div>
+        <div class="status-pill approved">Approved</div>
+      </div>
+      <div style="padding:14px 16px 32px;">
+        <button class="btn-primary">View All 107 Applications</button>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════
+         ADMIN: APPLICATION DETAIL
+    ════════════════════════════ -->
+    <div class="scr" id="s-admin-detail">
+      <div class="sbar lt" style="background:var(--navy-dark)">
+        <span>9:41</span><div class="si"><span>●●●</span><span>🔋</span></div>
+      </div>
+      <div class="hero" style="background:var(--navy-dark);">
+        <button class="back" onclick="go('s-admin')">←</button>
+        <h2>Application Review</h2><p>CGF-2025-0847 · Submitted Oct 3</p>
+      </div>
+      <div class="fb">
+        <div class="detail-section">
+          <div class="det-title">Family Information</div>
+          <div class="det-row"><span class="dr-lbl">Applicant</span><span class="dr-val">Sarah Johnson</span></div>
+          <div class="det-row"><span class="dr-lbl">Canton Address</span><span class="dr-val">✓ Verified</span></div>
+          <div class="det-row"><span class="dr-lbl">Household Size</span><span class="dr-val">4 people</span></div>
+          <div class="det-row"><span class="dr-lbl">Annual Income</span><span class="dr-val">$38,000</span></div>
+          <div class="det-row"><span class="dr-lbl">FPL Limit (200%)</span><span class="dr-val">$62,400</span></div>
+        </div>
+        <div class="ibox green">
+          <div class="ibox-top"><span style="font-size:16px">✅</span><div class="ibox-ttl">Auto-Eligible</div></div>
+          <div class="ibox-body">Income is within federal poverty guidelines. Residency doc uploaded. Income doc still missing.</div>
+          <div class="ibox-chip green">✓ Recommended for Approval</div>
+        </div>
+        <div class="detail-section">
+          <div class="det-title">Children (2) — IDs Pending Approval</div>
+          <div class="child-row"><div class="cr-avi g">👧</div><div class="cr-info"><div class="cr-name">Emma</div><div class="cr-meta">Age 7 · Girl · 2 gifts on wish list</div></div><div class="cr-badge pending">ID pending</div></div>
+          <div class="child-row"><div class="cr-avi b">👦</div><div class="cr-info"><div class="cr-name">Marcus</div><div class="cr-meta">Age 11 · Boy · 1 gift on wish list</div></div><div class="cr-badge pending">ID pending</div></div>
+        </div>
+        <div class="approve-panel">
+          <div class="approve-panel-hdr"><span>✅</span> Approve &amp; Assign Family Number</div>
+          <div class="approve-panel-body">
+            <div class="fgroup">
+              <label class="flabel">Assign Family Number</label>
+              <div style="font-size:11px;color:var(--muted);margin-bottom:8px;">Next available: <strong style="color:var(--navy)">103</strong> (last used: 102)</div>
+              <div class="fnum-wrap">
+                <span class="fnum-pre">F</span>
+                <input class="fnum-input" type="number" value="103" min="1" oninput="updatePreview(this.value)" />
+              </div>
+            </div>
+            <div class="cid-preview">
+              <div class="cid-label">Child IDs — Auto-Generated</div>
+              <div class="cid-row"><span class="cid-avi">👧</span><span class="cid-name">Emma, Age 7</span><span class="cid-id" id="id-a">F103-A</span></div>
+              <div class="cid-row"><span class="cid-avi">👦</span><span class="cid-name">Marcus, Age 11</span><span class="cid-id" id="id-b">F103-B</span></div>
+            </div>
+            <div class="email-preview">
+              <div class="ep-label">📧 Approval Email Preview</div>
+              <div class="ep-subject">Canton Goodfellows — Your 2025 Application is APPROVED</div>
+              <div class="ep-body" style="margin-top:6px;">
+                Dear Sarah,<br><br>
+                Your family has been approved for the 2025 program.<br><br>
+                <span class="ep-hl">Your Family Number: F103</span><br>
+                <span class="ep-hl">Emma → F103-A</span><br>
+                <span class="ep-hl">Marcus → F103-B</span><br><br>
+                Please save this email and bring it to <strong>Family Pickup Day</strong> in December.
+              </div>
+            </div>
+            <button class="btn-green" onclick="go('s-admin-approved')">✅ Approve &amp; Send Email</button>
+            <button class="btn-red">✗ Deny Application</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════
+         ADMIN: POST-APPROVAL
+    ════════════════════════════ -->
+    <div class="scr" id="s-admin-approved">
+      <div class="sbar lt" style="background:var(--navy-dark)">
+        <span>9:41</span><div class="si"><span>●●●</span><span>🔋</span></div>
+      </div>
+      <div class="hero" style="background:var(--navy-dark);">
+        <button class="back" onclick="go('s-admin')">←</button>
+        <h2>Application Approved</h2><p>CGF-2025-0847</p>
+      </div>
+      <div class="fb">
+        <div class="ibox green" style="text-align:center;">
+          <div style="font-size:32px;margin-bottom:8px;">✅</div>
+          <div class="ibox-ttl" style="font-size:14px;">Johnson Family — Approved</div>
+          <div class="ibox-body" style="margin-top:6px;">Approval email sent to <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="5e2d3f2c3f3670343136302d31301e3b333f3732703d3133">[email&#160;protected]</a></div>
+        </div>
+        <div class="detail-section">
+          <div class="det-title">Assigned IDs</div>
+          <div class="child-row"><div class="cr-avi g">👧</div><div class="cr-info"><div class="cr-name">Emma</div><div class="cr-meta">Age 7 · Girl · 2 gifts</div></div><div class="cr-badge assigned">F103-A</div></div>
+          <div class="child-row"><div class="cr-avi b">👦</div><div class="cr-info"><div class="cr-name">Marcus</div><div class="cr-meta">Age 11 · Boy · 1 gift</div></div><div class="cr-badge assigned">F103-B</div></div>
+        </div>
+        <div class="ibox blue">
+          <div class="ibox-top"><span style="font-size:16px">👥</span><div class="ibox-ttl">Now Visible to Sponsors</div></div>
+          <div class="ibox-body">F103-A and F103-B are now listed in the Sponsor Portal with their wish lists. Sponsors see age and gender only — no names.</div>
+        </div>
+        <button class="btn-primary" onclick="go('s-sponsor')">View in Sponsor Portal →</button>
+        <button class="btn-secondary" onclick="go('s-admin')">← Back to Queue</button>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════
+         SPONSOR PORTAL
+    ════════════════════════════ -->
+    <div class="scr" id="s-sponsor">
+      <div class="sbar lt" style="background:var(--navy)">
+        <span>9:41</span><div class="si"><span>●●●</span><span>🔋</span></div>
+      </div>
+      <div class="hero">
+        <button class="back" onclick="go('s-home')">←</button>
+        <h2>Sponsor a Child ⭐</h2><p>Tap a card to see their wish list</p>
+      </div>
+      <div style="background:var(--gold-bg);border-bottom:1px solid #e5d080;padding:12px 16px;display:flex;align-items:center;gap:10px;">
+        <span style="font-size:20px;">🎄</span>
+        <div style="font-size:12px;color:#6b4f00;font-weight:500;line-height:1.4;"><strong style="color:#3d2d00;">12 children still need a sponsor.</strong> One sponsor covers all gifts on a child's wish list.</div>
+      </div>
+      <div class="chips">
+        <div class="chip on">All Ages</div>
+        <div class="chip">0–3</div>
+        <div class="chip">4–8</div>
+        <div class="chip">9–12</div>
+        <div class="chip">13–18</div>
+      </div>
+
+      <div class="scard expanded" id="card-a" style="margin-top:14px;">
+        <div class="scard-hdr" onclick="toggleCard('card-a')">
+          <div class="sc-avi g">👧</div>
+          <div style="flex:1;"><div class="sc-id">F103-A</div><div class="sc-age">Girl · Age 7</div><div class="sc-tags"><span class="sc-tag">🎁 2 gifts</span><span class="sc-tag">$20–$50</span><span class="sc-tag amz">+ Amazon list</span></div></div>
+          <div class="expand-icon">›</div>
+        </div>
+        <div class="wish-list">
+          <div class="wl-header">Her Wish List</div>
+          <div class="amz-link"><span class="amz-logo">amazon</span><span class="amz-text">View her Amazon Wish List →</span><span class="amz-arr">›</span></div>
+          <div class="wl-item"><div class="wl-emoji">🎨</div><div><div class="wl-name">Art Supplies Set</div><div class="wl-note">Colored pencils, markers, sketchpad — she loves drawing</div><div class="wl-price">~$20–$35</div></div></div>
+          <div class="wl-item"><div class="wl-emoji">🧩</div><div><div class="wl-name">LEGO Friends Set</div><div class="wl-note">Any set from the Friends series, age 6+</div><div class="wl-price">~$30–$50</div></div></div>
+          <button class="btn-sponsor" onclick="go('s-sponsor-confirm')">⭐ Sponsor F103-A</button>
+        </div>
+      </div>
+
+      <div class="scard" id="card-b">
+        <div class="scard-hdr" onclick="toggleCard('card-b')">
+          <div class="sc-avi b">👦</div>
+          <div style="flex:1;"><div class="sc-id">F103-B</div><div class="sc-age">Boy · Age 11</div><div class="sc-tags"><span class="sc-tag">🎁 1 gift</span><span class="sc-tag">$25–$45</span></div></div>
+          <div class="expand-icon">›</div>
+        </div>
+        <div class="wish-list">
+          <div class="wl-header">His Wish List</div>
+          <div class="wl-item"><div class="wl-emoji">⚽</div><div><div class="wl-name">Soccer Gear</div><div class="wl-note">Size 5 ball + shin guards, plays recreationally</div><div class="wl-price">~$25–$45</div></div></div>
+          <button class="btn-sponsor" onclick="go('s-sponsor-confirm')">⭐ Sponsor F103-B</button>
+        </div>
+      </div>
+
+      <div class="scard taken" id="card-c">
+        <div class="scard-hdr" onclick="toggleCard('card-c')">
+          <div class="sc-avi g">👧</div>
+          <div style="flex:1;"><div class="sc-id">F098-A</div><div class="sc-age">Girl · Age 14</div><div class="sc-tags"><span class="sc-tag">🎁 3 gifts</span><span class="sc-tag">$30–$60</span></div></div>
+          <div class="expand-icon">›</div>
+        </div>
+        <div class="wish-list"><div class="taken-msg">✓ F098-A has already been sponsored — thank you!</div></div>
+      </div>
+
+      <div class="scard" id="card-d">
+        <div class="scard-hdr" onclick="toggleCard('card-d')">
+          <div class="sc-avi b">👦</div>
+          <div style="flex:1;"><div class="sc-id">F101-A</div><div class="sc-age">Boy · Age 4</div><div class="sc-tags"><span class="sc-tag">🎁 2 gifts</span><span class="sc-tag amz">+ Amazon list</span></div></div>
+          <div class="expand-icon">›</div>
+        </div>
+        <div class="wish-list">
+          <div class="amz-link"><span class="amz-logo">amazon</span><span class="amz-text">View his Amazon Wish List →</span><span class="amz-arr">›</span></div>
+          <div class="wl-item"><div class="wl-emoji">🚂</div><div><div class="wl-name">Toy Train Set</div><div class="wl-note">Loves trains — wooden or battery-powered both fine</div><div class="wl-price">~$25–$40</div></div></div>
+          <button class="btn-sponsor" onclick="go('s-sponsor-confirm')">⭐ Sponsor F101-A</button>
+        </div>
+      </div>
+
+      <div style="padding:16px 16px 32px;">
+        <button class="btn-primary">View All 12 Available Children</button>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════
+         SPONSOR: CONFIRMATION & SIGN-UP
+    ════════════════════════════ -->
+    <div class="scr" id="s-sponsor-confirm">
+      <div class="sbar lt" style="background:var(--navy)">
+        <span>9:41</span><div class="si"><span>●●●</span><span>🔋</span></div>
+      </div>
+      <div class="hero">
+        <button class="back" onclick="go('s-sponsor')">←</button>
+        <h2>Confirm Sponsorship</h2>
+        <p>F103-A · Girl · Age 7</p>
+      </div>
+
+      <div class="fb" style="padding-top:16px;">
+
+        <!-- Child summary -->
+        <div style="background:white;border:1.5px solid var(--border);border-radius:14px;padding:16px;margin-bottom:14px;display:flex;align-items:center;gap:14px;">
+          <div style="width:52px;height:52px;border-radius:14px;background:#fdeef0;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;">👧</div>
+          <div>
+            <div style="font-family:'Merriweather',serif;font-size:16px;font-weight:700;color:var(--navy);">F103-A</div>
+            <div style="font-size:12px;color:var(--muted);margin-top:2px;">Girl · Age 7 · 2 gifts on wish list</div>
+            <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;">
+              <span style="background:var(--lt-gray);color:var(--navy);font-size:10px;font-weight:600;padding:3px 8px;border-radius:8px;">Art Supplies</span>
+              <span style="background:var(--lt-gray);color:var(--navy);font-size:10px;font-weight:600;padding:3px 8px;border-radius:8px;">LEGO Friends</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Your info -->
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:10px;">Your Contact Info</div>
+        <div class="fgroup"><label class="flabel">Full Name</label><input class="finput" placeholder="Your name" /></div>
+        <div class="fgroup"><label class="flabel">Email Address</label><input class="finput" type="email" placeholder="you@email.com" /></div>
+        <div class="fgroup"><label class="flabel">Mobile Phone (for text reminders)</label><input class="finput" type="tel" placeholder="(734) 555-0000" /></div>
+
+        <!-- Reminder preference -->
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin:14px 0 10px;">Reminder Preference</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px;">
+          <div id="pref-both" onclick="selectPref('both')" style="border:2px solid var(--navy);background:#eef3fb;border-radius:12px;padding:12px 8px;text-align:center;cursor:pointer;">
+            <div style="font-size:20px;margin-bottom:4px;">📱📧</div>
+            <div style="font-size:11px;font-weight:700;color:var(--navy);">Text + Email</div>
+          </div>
+          <div id="pref-text" onclick="selectPref('text')" style="border:2px solid var(--border);border-radius:12px;padding:12px 8px;text-align:center;cursor:pointer;background:white;">
+            <div style="font-size:20px;margin-bottom:4px;">📱</div>
+            <div style="font-size:11px;font-weight:700;color:var(--muted);">Text Only</div>
+          </div>
+          <div id="pref-email" onclick="selectPref('email')" style="border:2px solid var(--border);border-radius:12px;padding:12px 8px;text-align:center;cursor:pointer;background:white;">
+            <div style="font-size:20px;margin-bottom:4px;">📧</div>
+            <div style="font-size:11px;font-weight:700;color:var(--muted);">Email Only</div>
+          </div>
+        </div>
+
+        <!-- Reminder schedule preview -->
+        <div style="background:var(--lt-gray);border-radius:14px;padding:16px;margin-bottom:14px;">
+          <div style="font-size:11px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">📅 Your Reminder Schedule</div>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <div style="display:flex;align-items:flex-start;gap:10px;">
+              <div style="width:8px;height:8px;border-radius:50%;background:var(--navy);flex-shrink:0;margin-top:5px;"></div>
+              <div><div style="font-size:12px;font-weight:600;color:var(--text);">Immediately — Assignment Confirmation</div><div style="font-size:11px;color:var(--muted);margin-top:1px;">Gift guidelines, wish list, and packaging instructions</div></div>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:10px;">
+              <div style="width:8px;height:8px;border-radius:50%;background:var(--navy);flex-shrink:0;margin-top:5px;"></div>
+              <div><div style="font-size:12px;font-weight:600;color:var(--text);">~3 Weeks Before Drop-Off</div><div style="font-size:11px;color:var(--muted);margin-top:1px;">Reminder to start shopping + drop-off date/location</div></div>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:10px;">
+              <div style="width:8px;height:8px;border-radius:50%;background:var(--gold);flex-shrink:0;margin-top:5px;"></div>
+              <div><div style="font-size:12px;font-weight:600;color:var(--text);">1 Week Before Drop-Off</div><div style="font-size:11px;color:var(--muted);margin-top:1px;">Packaging checklist reminder — brown bag, label, no tape</div></div>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:10px;">
+              <div style="width:8px;height:8px;border-radius:50%;background:var(--red);flex-shrink:0;margin-top:5px;"></div>
+              <div><div style="font-size:12px;font-weight:600;color:var(--text);">Day Before Drop-Off</div><div style="font-size:11px;color:var(--muted);margin-top:1px;">Final reminder with your specific drop-off day &amp; hours</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Gift guidelines preview -->
+        <div style="background:white;border:1.5px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:14px;">
+          <div style="background:var(--navy);padding:12px 16px;font-size:12px;font-weight:700;color:white;">🎁 Gift Guidelines — Please Read</div>
+          <div style="padding:14px 16px;">
+            <div style="font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.6;">Please help us ensure all children receive the same number of gifts. Per child, purchase:</div>
+            <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px;">
+              <div style="display:flex;align-items:center;gap:10px;background:var(--lt-gray);border-radius:10px;padding:10px 12px;">
+                <span style="font-size:18px;">🌟</span>
+                <div><div style="font-size:12px;font-weight:700;color:var(--navy);">1 Wish / Large Gift</div><div style="font-size:11px;color:var(--muted);">Approx $35–$50 · No stocking stuffers</div></div>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;background:var(--lt-gray);border-radius:10px;padding:10px 12px;">
+                <span style="font-size:18px;">🎁</span>
+                <div><div style="font-size:12px;font-weight:700;color:var(--navy);">2 Medium Gifts</div><div style="font-size:11px;color:var(--muted);">Approx $15–$25 each</div></div>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;background:var(--lt-gray);border-radius:10px;padding:10px 12px;">
+                <span style="font-size:18px;">🎀</span>
+                <div><div style="font-size:12px;font-weight:700;color:var(--navy);">1 Small Gift</div><div style="font-size:11px;color:var(--muted);">Approx $10–$15 · Include batteries if needed</div></div>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;background:#fff3e0;border-radius:10px;padding:10px 12px;border:1px solid #ffe0b2;">
+                <span style="font-size:18px;">👕</span>
+                <div><div style="font-size:12px;font-weight:700;color:var(--navy);">$75 Clothing Gift Card</div><div style="font-size:11px;color:var(--muted);">Kohl's — one per child</div></div>
+              </div>
+            </div>
+            <div style="background:var(--gold-bg);border-radius:10px;padding:10px 12px;font-size:11px;color:#6b4f00;line-height:1.6;border:1px solid #e5d080;">
+              💡 Can't cover everything? That's okay — Goodfellows will fill in any missing gifts. If you want to give more, please consider sponsoring an additional child instead.
+            </div>
+          </div>
+        </div>
+
+        <button class="btn-primary" onclick="go('s-sponsor-dashboard')">Confirm Sponsorship &amp; See Next Steps →</button>
+        <button class="btn-secondary" onclick="go('s-sponsor')">← Go Back</button>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════
+         SPONSOR: MY DASHBOARD
+    ════════════════════════════ -->
+    <div class="scr" id="s-sponsor-dashboard">
+      <div class="sbar lt" style="background:var(--navy)">
+        <span>9:41</span><div class="si"><span>●●●</span><span>🔋</span></div>
+      </div>
+      <div class="hero">
+        <button class="back" onclick="go('s-home')">←</button>
+        <h2>My Sponsorship ⭐</h2>
+        <p>Thank you, Jane! You're making Christmas happen.</p>
+      </div>
+
+      <!-- Confirmed banner -->
+      <div style="background:var(--green);padding:14px 18px;display:flex;align-items:center;gap:12px;">
+        <span style="font-size:24px;">✅</span>
+        <div>
+          <div style="font-size:13px;font-weight:700;color:white;">Sponsorship Confirmed!</div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.8);margin-top:2px;">Confirmation sent to <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6c060d02092c09010d0500420f0301">[email&#160;protected]</a> + (734) 555-0000</div>
+        </div>
+      </div>
+
+      <div class="fb" style="padding-top:16px;">
+
+        <!-- Child card -->
+        <div style="background:white;border:1.5px solid var(--green);border-radius:14px;padding:16px;margin-bottom:14px;display:flex;align-items:center;gap:14px;">
+          <div style="width:52px;height:52px;border-radius:14px;background:#fdeef0;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;">👧</div>
+          <div style="flex:1;">
+            <div style="font-family:'Merriweather',serif;font-size:16px;font-weight:700;color:var(--navy);">F103-A</div>
+            <div style="font-size:12px;color:var(--muted);margin-top:2px;">Girl · Age 7</div>
+          </div>
+          <div style="background:var(--green-bg);color:var(--green);font-size:10px;font-weight:700;padding:4px 10px;border-radius:99px;text-transform:uppercase;letter-spacing:0.5px;">Confirmed</div>
+        </div>
+
+        <!-- Drop-off info — prominent -->
+        <div style="background:var(--navy);border-radius:16px;padding:18px;margin-bottom:14px;">
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,0.5);margin-bottom:10px;">📦 Your Drop-Off Assignment</div>
+          <div style="font-family:'Merriweather',serif;font-size:18px;font-weight:700;color:white;margin-bottom:4px;">Friday, December 1st</div>
+          <div style="font-size:13px;color:rgba(255,255,255,0.8);margin-bottom:2px;">10:00 AM – 8:00 PM</div>
+          <div style="font-size:12px;color:rgba(255,255,255,0.6);margin-bottom:14px;">Canton Township Municipal Building · Lower Level</div>
+          <div style="background:rgba(255,255,255,0.1);border-radius:10px;padding:10px 12px;font-size:11px;color:rgba(255,255,255,0.7);line-height:1.6;">
+            Family #103 falls in the <strong style="color:white;">101 and greater</strong> range → Friday Dec 1 drop-off.<br><br>
+            Can't make it? Call <strong style="color:white;">Karry Dattilio at 734-788-9853</strong> before Nov 29 to arrange an alternate time.
+          </div>
+        </div>
+
+        <!-- Packaging instructions -->
+        <div style="background:white;border:1.5px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:14px;">
+          <div style="background:var(--navy);padding:12px 16px;font-size:12px;font-weight:700;color:white;">🛍️ How to Package Your Gifts</div>
+          <div style="padding:14px 16px;">
+            <div style="font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.6;">Follow these steps carefully so we can process bags quickly on drop-off day.</div>
+
+            <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:14px;">
+              <div style="display:flex;align-items:flex-start;gap:10px;">
+                <div style="width:26px;height:26px;border-radius:50%;background:var(--navy);color:white;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">1</div>
+                <div style="font-size:12px;color:var(--text);line-height:1.6;">Place all gifts in a <strong>brown paper leaf refuse bag</strong> (the large yard waste kind)</div>
+              </div>
+              <div style="display:flex;align-items:flex-start;gap:10px;">
+                <div style="width:26px;height:26px;border-radius:50%;background:var(--navy);color:white;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">2</div>
+                <div style="font-size:12px;color:var(--text);line-height:1.6;"><strong>Do NOT tape the bag shut</strong> — volunteers need to inspect and sort the contents</div>
+              </div>
+              <div style="display:flex;align-items:flex-start;gap:10px;">
+                <div style="width:26px;height:26px;border-radius:50%;background:var(--navy);color:white;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">3</div>
+                <div style="font-size:12px;color:var(--text);line-height:1.6;">Show your <strong>digital bag label</strong> on your phone when you arrive — a volunteer will record the info</div>
+              </div>
+              <div style="display:flex;align-items:flex-start;gap:10px;">
+                <div style="width:26px;height:26px;border-radius:50%;background:var(--navy);color:white;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">4</div>
+                <div style="font-size:12px;color:var(--text);line-height:1.6;">Leave gifts <strong>unwrapped</strong> — we provide wrapping paper to families so parents can wrap themselves</div>
+              </div>
+              <div style="display:flex;align-items:flex-start;gap:10px;">
+                <div style="width:26px;height:26px;border-radius:50%;background:var(--navy);color:white;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">5</div>
+                <div style="font-size:12px;color:var(--text);line-height:1.6;">Include any required <strong>batteries</strong> for battery-operated toys</div>
+              </div>
+            </div>
+
+            <!-- Digital label CTA -->
+            <div style="background:var(--navy);border-radius:12px;padding:16px;text-align:center;">
+              <div style="font-size:12px;color:rgba(255,255,255,0.75);margin-bottom:12px;line-height:1.6;">No printer needed! Pull up your digital bag label on your phone when you arrive at drop-off.</div>
+              <button onclick="go('s-bag-label')" style="width:100%;padding:13px;background:white;color:var(--navy);border:none;border-radius:10px;font-size:13px;font-weight:700;font-family:'Open Sans',sans-serif;cursor:pointer;">📱 Open My Digital Bag Label</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Reminder schedule -->
+        <div style="background:white;border:1.5px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:14px;">
+          <div style="background:var(--lt-gray);padding:12px 16px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);">📅 Your Reminder Schedule</div>
+          <div style="padding:8px 0;">
+
+            <div style="display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid var(--lt-gray);">
+              <div style="width:36px;height:36px;border-radius:10px;background:var(--green-bg);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">✅</div>
+              <div style="flex:1;"><div style="font-size:12px;font-weight:600;color:var(--text);">Today — Assignment Confirmed</div><div style="font-size:11px;color:var(--muted);margin-top:1px;">Sent to email + text</div></div>
+              <div style="font-size:10px;font-weight:700;color:var(--green);text-transform:uppercase;">Sent</div>
+            </div>
+
+            <div style="display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid var(--lt-gray);">
+              <div style="width:36px;height:36px;border-radius:10px;background:var(--lt-gray);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">🛒</div>
+              <div style="flex:1;"><div style="font-size:12px;font-weight:600;color:var(--text);">Nov 10 — Time to Shop!</div><div style="font-size:11px;color:var(--muted);margin-top:1px;">Wish list recap + drop-off date reminder</div></div>
+              <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;">Scheduled</div>
+            </div>
+
+            <div style="display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid var(--lt-gray);">
+              <div style="width:36px;height:36px;border-radius:10px;background:var(--gold-bg);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">📦</div>
+              <div style="flex:1;"><div style="font-size:12px;font-weight:600;color:var(--text);">Nov 24 — Packaging Reminder</div><div style="font-size:11px;color:var(--muted);margin-top:1px;">Brown bag checklist, label, no tape</div></div>
+              <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;">Scheduled</div>
+            </div>
+
+            <div style="display:flex;align-items:center;gap:12px;padding:10px 16px;">
+              <div style="width:36px;height:36px;border-radius:10px;background:#fdecea;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">🚨</div>
+              <div style="flex:1;"><div style="font-size:12px;font-weight:600;color:var(--text);">Nov 30 — Drop-Off Tomorrow!</div><div style="font-size:11px;color:var(--muted);margin-top:1px;">Fri Dec 1 · 10 AM–8 PM · Canton Twp Building</div></div>
+              <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;">Scheduled</div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Can't make it -->
+        <div style="background:var(--lt-gray);border-radius:12px;padding:14px;margin-bottom:14px;">
+          <div style="font-size:12px;font-weight:700;color:var(--navy);margin-bottom:4px;">Can't make the drop-off?</div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.6;">Call <strong style="color:var(--navy);">Karry Dattilio at 734-788-9853</strong> before November 29 to arrange an alternate time.</div>
+        </div>
+
+        <button class="btn-secondary" onclick="go('s-home')">← Back to Home</button>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════
+         DIGITAL BAG LABEL
+    ════════════════════════════ -->
+    <div class="scr" id="s-bag-label" style="background:#1a2a4a;">
+      <div class="sbar lt" style="background:#1a2a4a;">
+        <span style="color:white;">9:41</span>
+        <div class="si" style="color:white;"><span>●●●</span><span>🔋</span></div>
+      </div>
+
+      <!-- Volunteer instruction bar -->
+      <div style="background:#c0392b;padding:10px 16px;text-align:center;">
+        <div style="font-size:11px;font-weight:700;color:white;letter-spacing:1px;text-transform:uppercase;">📋 For Volunteers — Please Record This Info</div>
+      </div>
+
+      <!-- Main label card — large, bright, readable at arm's length -->
+      <div style="padding:20px 16px;display:flex;flex-direction:column;gap:16px;">
+
+        <!-- Header -->
+        <div style="text-align:center;margin-bottom:4px;">
+          <div style="font-family:'Merriweather',serif;font-size:13px;font-weight:700;color:rgba(255,255,255,0.5);letter-spacing:2px;text-transform:uppercase;">Canton Goodfellows 2025</div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.35);margin-top:3px;">Sponsor Gift Bag Label</div>
+        </div>
+
+        <!-- Family # and Child — BIG -->
+        <div style="background:white;border-radius:20px;padding:28px 20px;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,0.4);">
+          <div style="display:grid;grid-template-columns:1fr 1px 1fr;gap:0;margin-bottom:20px;">
+            <div style="padding-right:16px;">
+              <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--muted);margin-bottom:8px;">Family #</div>
+              <div style="font-family:'Merriweather',serif;font-size:56px;font-weight:900;color:var(--navy);line-height:1;">103</div>
+            </div>
+            <div style="background:var(--border);width:1px;"></div>
+            <div style="padding-left:16px;">
+              <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--muted);margin-bottom:8px;">Child</div>
+              <div style="font-family:'Merriweather',serif;font-size:56px;font-weight:900;color:var(--navy);line-height:1;">A</div>
+            </div>
+          </div>
+
+          <div style="height:1px;background:var(--border);margin-bottom:20px;"></div>
+
+          <!-- Age, Gender, Kids in family -->
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:20px;">
+            <div style="background:var(--lt-gray);border-radius:12px;padding:12px 8px;">
+              <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:4px;">Age</div>
+              <div style="font-family:'Merriweather',serif;font-size:28px;font-weight:700;color:var(--navy);">7</div>
+            </div>
+            <div style="background:var(--lt-gray);border-radius:12px;padding:12px 8px;">
+              <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:4px;">Gender</div>
+              <div style="font-family:'Merriweather',serif;font-size:28px;font-weight:700;color:var(--navy);">G</div>
+            </div>
+            <div style="background:var(--lt-gray);border-radius:12px;padding:12px 8px;">
+              <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:4px;">Kids</div>
+              <div style="font-family:'Merriweather',serif;font-size:28px;font-weight:700;color:var(--navy);">4</div>
+            </div>
+          </div>
+
+          <div style="height:1px;background:var(--border);margin-bottom:16px;"></div>
+
+          <!-- Interests -->
+          <div>
+            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--muted);margin-bottom:10px;">Interests</div>
+            <div style="font-size:15px;color:var(--text);line-height:1.6;font-weight:500;">Art supplies, LEGO Friends, drawing, crafts</div>
+          </div>
+        </div>
+
+        <!-- What's in the bag checklist -->
+        <div style="background:rgba(255,255,255,0.08);border-radius:16px;padding:18px;">
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,0.5);margin-bottom:12px;">Contents Checklist</div>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <label style="display:flex;align-items:center;gap:12px;cursor:pointer;">
+              <input type="checkbox" style="width:20px;height:20px;accent-color:var(--green);flex-shrink:0;" />
+              <span style="font-size:13px;color:white;">1 Wish / Large Gift ($35–$50)</span>
+            </label>
+            <label style="display:flex;align-items:center;gap:12px;cursor:pointer;">
+              <input type="checkbox" style="width:20px;height:20px;accent-color:var(--green);flex-shrink:0;" />
+              <span style="font-size:13px;color:white;">2 Medium Gifts ($15–$25 each)</span>
+            </label>
+            <label style="display:flex;align-items:center;gap:12px;cursor:pointer;">
+              <input type="checkbox" style="width:20px;height:20px;accent-color:var(--green);flex-shrink:0;" />
+              <span style="font-size:13px;color:white;">1 Small Gift ($10–$15)</span>
+            </label>
+            <label style="display:flex;align-items:center;gap:12px;cursor:pointer;">
+              <input type="checkbox" style="width:20px;height:20px;accent-color:var(--green);flex-shrink:0;" />
+              <span style="font-size:13px;color:white;">$75 Kohl's Clothing Gift Card</span>
+            </label>
+            <label style="display:flex;align-items:center;gap:12px;cursor:pointer;">
+              <input type="checkbox" style="width:20px;height:20px;accent-color:var(--green);flex-shrink:0;" />
+              <span style="font-size:13px;color:white;">Batteries (if needed)</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Drop-off confirmation strip -->
+        <div style="background:var(--green);border-radius:14px;padding:14px 16px;display:flex;align-items:center;gap:12px;">
+          <span style="font-size:24px;">✅</span>
+          <div>
+            <div style="font-size:12px;font-weight:700;color:white;">Drop-Off: Friday, December 1st</div>
+            <div style="font-size:11px;color:rgba(255,255,255,0.8);margin-top:2px;">10 AM – 8 PM · Canton Twp Municipal Building · Lower Level</div>
+          </div>
+        </div>
+
+        <!-- Sponsor name -->
+        <div style="text-align:center;padding-bottom:8px;">
+          <div style="font-size:11px;color:rgba(255,255,255,0.35);margin-bottom:3px;">Sponsor</div>
+          <div style="font-size:14px;font-weight:700;color:rgba(255,255,255,0.7);">Jane Smith</div>
+        </div>
+
+        <button onclick="go('s-sponsor-dashboard')" style="width:100%;padding:14px;background:rgba(255,255,255,0.12);color:white;border:1.5px solid rgba(255,255,255,0.2);border-radius:12px;font-size:13px;font-weight:700;font-family:'Open Sans',sans-serif;cursor:pointer;">← Back to My Sponsorship</button>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════
+         STATUS CHECK — LOOKUP
+    ════════════════════════════ -->
+    <div class="scr" id="s-status-check">
+      <div class="sbar lt" style="background:var(--navy)">
+        <span>9:41</span><div class="si"><span>●●●</span><span>🔋</span></div>
+      </div>
+      <div class="hero">
+        <button class="back" onclick="go('s-home')">←</button>
+        <h2>Check My Application</h2>
+        <p>2025 Christmas Program</p>
+      </div>
+      <div class="fb" style="padding-top:20px;">
+
+        <div style="background:white;border:1.5px solid var(--border);border-radius:14px;padding:18px;margin-bottom:14px;">
+          <div style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:6px;">Look Up Your Status</div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.6;">Enter the email address you used when you applied and we'll show your current status.</div>
+        </div>
+
+        <div class="fgroup"><label class="flabel">Email Address</label><input class="finput" type="email" placeholder="you@email.com" /></div>
+
+        <button class="btn-primary" onclick="go('s-status-approved')" style="margin-top:4px;">Look Up My Application →</button>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px;">
+          <button class="btn-secondary" style="font-size:11px;padding:10px;" onclick="go('s-status-submitted')">👀 See: Submitted</button>
+          <button class="btn-secondary" style="font-size:11px;padding:10px;" onclick="go('s-status-review')">👀 See: Under Review</button>
+          <button class="btn-secondary" style="font-size:11px;padding:10px;" onclick="go('s-status-approved')">👀 See: Approved</button>
+          <button class="btn-secondary" style="font-size:11px;padding:10px;" onclick="go('s-status-denied')">👀 See: Denied</button>
+        </div>
+        <div style="font-size:10px;color:var(--muted);text-align:center;margin-top:6px;">↑ Demo buttons to preview each status state</div>
+
+        <div style="background:var(--lt-gray);border-radius:12px;padding:14px;margin-top:14px;">
+          <div style="font-size:12px;color:var(--text);line-height:1.6;">📧 You'll also receive automatic email and text updates as your application moves through each stage — no need to check back manually.</div>
+        </div>
+
+        <div style="background:white;border:1.5px solid var(--border);border-radius:12px;padding:14px;margin-top:14px;">
+          <div style="font-size:11px;font-weight:700;color:var(--navy);margin-bottom:8px;">Can't find your application?</div>
+          <div style="font-size:11px;color:var(--muted);line-height:1.6;">Make sure you're using the exact email you entered on the form. If you still can't find it, contact us:</div>
+          <div style="font-size:12px;font-weight:600;color:var(--navy);margin-top:8px;">cantongoodfellows [at] gmail.com<br>734-664-1044</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════
+         STATUS: SUBMITTED
+    ════════════════════════════ -->
+    <div class="scr" id="s-status-submitted">
+      <div class="sbar lt" style="background:var(--navy)"><span>9:41</span><div class="si"><span>●●●</span><span>🔋</span></div></div>
+      <div class="hero"><button class="back" onclick="go('s-status-check')">←</button><h2>Application Status</h2><p>sarah.johnson [at] gmail.com</p></div>
+      <div class="fb" style="padding-top:20px;">
+
+        <!-- Status badge -->
+        <div style="background:white;border:2px solid #93c5fd;border-radius:16px;padding:24px;text-align:center;margin-bottom:14px;">
+          <div style="width:64px;height:64px;border-radius:50%;background:#eff6ff;display:flex;align-items:center;justify-content:center;font-size:30px;margin:0 auto 14px;">📬</div>
+          <div style="font-family:'Merriweather',serif;font-size:18px;font-weight:700;color:#1e40af;margin-bottom:6px;">Application Submitted</div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.6;">We've received your application and it's in our queue. You don't need to do anything right now.</div>
+        </div>
+
+        <!-- Timeline -->
+        <div style="background:white;border:1.5px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:14px;">
+          <div style="background:var(--lt-gray);padding:12px 16px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);">What Happens Next</div>
+          <div style="padding:16px;display:flex;flex-direction:column;gap:14px;">
+            <div style="display:flex;gap:12px;align-items:flex-start;">
+              <div style="width:28px;height:28px;border-radius:50%;background:#1e40af;color:white;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">✓</div>
+              <div><div style="font-size:12px;font-weight:700;color:var(--text);">Application Received</div><div style="font-size:11px;color:var(--muted);margin-top:2px;">Oct 3, 2025 · Confirmation sent to your email</div></div>
+            </div>
+            <div style="display:flex;gap:12px;align-items:flex-start;">
+              <div style="width:28px;height:28px;border-radius:50%;background:var(--lt-gray);color:var(--muted);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">2</div>
+              <div><div style="font-size:12px;font-weight:700;color:var(--muted);">Under Review</div><div style="font-size:11px;color:var(--muted);margin-top:2px;">Admin reviews eligibility &amp; documents</div></div>
+            </div>
+            <div style="display:flex;gap:12px;align-items:flex-start;">
+              <div style="width:28px;height:28px;border-radius:50%;background:var(--lt-gray);color:var(--muted);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">3</div>
+              <div><div style="font-size:12px;font-weight:700;color:var(--muted);">Decision by Nov 1</div><div style="font-size:11px;color:var(--muted);margin-top:2px;">You'll receive an email &amp; text with your result</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div style="background:var(--lt-gray);border-radius:12px;padding:14px;font-size:12px;color:var(--muted);line-height:1.6;">📅 Applications are reviewed in the order received. Decisions are sent by <strong style="color:var(--navy);">November 1</strong>.</div>
+        <button class="btn-secondary" onclick="go('s-home')">← Back to Home</button>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════
+         STATUS: UNDER REVIEW
+    ════════════════════════════ -->
+    <div class="scr" id="s-status-review">
+      <div class="sbar lt" style="background:var(--navy)"><span>9:41</span><div class="si"><span>●●●</span><span>🔋</span></div></div>
+      <div class="hero"><button class="back" onclick="go('s-status-check')">←</button><h2>Application Status</h2><p>sarah.johnson [at] gmail.com</p></div>
+      <div class="fb" style="padding-top:20px;">
+
+        <div style="background:white;border:2px solid #fcd34d;border-radius:16px;padding:24px;text-align:center;margin-bottom:14px;">
+          <div style="width:64px;height:64px;border-radius:50%;background:#fffbeb;display:flex;align-items:center;justify-content:center;font-size:30px;margin:0 auto 14px;">🔎</div>
+          <div style="font-family:'Merriweather',serif;font-size:18px;font-weight:700;color:#92400e;margin-bottom:6px;">Under Review</div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.6;">Your application is being reviewed by our team. We'll notify you by email and text once a decision has been made.</div>
+        </div>
+
+        <div style="background:white;border:1.5px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:14px;">
+          <div style="background:var(--lt-gray);padding:12px 16px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);">What Happens Next</div>
+          <div style="padding:16px;display:flex;flex-direction:column;gap:14px;">
+            <div style="display:flex;gap:12px;align-items:flex-start;">
+              <div style="width:28px;height:28px;border-radius:50%;background:var(--green);color:white;font-size:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">✓</div>
+              <div><div style="font-size:12px;font-weight:700;color:var(--text);">Application Received</div><div style="font-size:11px;color:var(--muted);margin-top:2px;">Oct 3, 2025</div></div>
+            </div>
+            <div style="display:flex;gap:12px;align-items:flex-start;">
+              <div style="width:28px;height:28px;border-radius:50%;background:#f59e0b;color:white;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">→</div>
+              <div><div style="font-size:12px;font-weight:700;color:var(--text);">Under Review Now</div><div style="font-size:11px;color:var(--muted);margin-top:2px;">Eligibility &amp; documents being verified</div></div>
+            </div>
+            <div style="display:flex;gap:12px;align-items:flex-start;">
+              <div style="width:28px;height:28px;border-radius:50%;background:var(--lt-gray);color:var(--muted);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">3</div>
+              <div><div style="font-size:12px;font-weight:700;color:var(--muted);">Decision Coming Soon</div><div style="font-size:11px;color:var(--muted);margin-top:2px;">Email &amp; text notification by Nov 1</div></div>
+            </div>
+          </div>
+        </div>
+        <button class="btn-secondary" onclick="go('s-home')">← Back to Home</button>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════
+         STATUS: APPROVED
+    ════════════════════════════ -->
+    <div class="scr" id="s-status-approved">
+      <div class="sbar lt" style="background:var(--navy)"><span>9:41</span><div class="si"><span>●●●</span><span>🔋</span></div></div>
+      <div class="hero"><button class="back" onclick="go('s-status-check')">←</button><h2>Application Status</h2><p>sarah.johnson [at] gmail.com</p></div>
+      <div class="fb" style="padding-top:20px;">
+
+        <div style="background:white;border:2px solid #6ee7b7;border-radius:16px;padding:24px;text-align:center;margin-bottom:14px;">
+          <div style="width:64px;height:64px;border-radius:50%;background:var(--green-bg);display:flex;align-items:center;justify-content:center;font-size:30px;margin:0 auto 14px;">🎉</div>
+          <div style="font-family:'Merriweather',serif;font-size:18px;font-weight:700;color:var(--green);margin-bottom:6px;">You're Approved!</div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.6;">Your family has been approved for the 2025 Christmas program. Your gifts will be ready for pickup in December.</div>
+        </div>
+
+        <!-- Family ID card -->
+        <div style="background:var(--navy);border-radius:16px;padding:18px;margin-bottom:14px;text-align:center;">
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,0.5);margin-bottom:8px;">Your Family Number</div>
+          <div style="font-family:'Merriweather',serif;font-size:48px;font-weight:900;color:white;line-height:1;">F103</div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.5);margin-top:6px;">Save this — you'll need it on Pickup Day</div>
+          <div style="display:flex;justify-content:center;gap:10px;margin-top:14px;">
+            <div style="background:rgba(255,255,255,0.12);border-radius:10px;padding:10px 16px;text-align:center;">
+              <div style="font-size:10px;color:rgba(255,255,255,0.5);margin-bottom:3px;">Child A</div>
+              <div style="font-size:16px;font-weight:700;color:white;">F103-A</div>
+            </div>
+            <div style="background:rgba(255,255,255,0.12);border-radius:10px;padding:10px 16px;text-align:center;">
+              <div style="font-size:10px;color:rgba(255,255,255,0.5);margin-bottom:3px;">Child B</div>
+              <div style="font-size:16px;font-weight:700;color:white;">F103-B</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pickup details -->
+        <div style="background:var(--green-bg);border:1.5px solid #a3d4b5;border-radius:14px;padding:16px;margin-bottom:14px;">
+          <div style="font-size:12px;font-weight:700;color:var(--navy);margin-bottom:10px;">📦 Your Pickup Day</div>
+          <div style="font-size:13px;font-weight:700;color:var(--navy);">Saturday, December 7, 2025</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:2px;">9:00 AM – 12:00 PM</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:2px;">Canton Township Municipal Building</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:8px;line-height:1.6;">Bring this app or your approval email. Check in by your family number <strong style="color:var(--navy);">F103</strong>.</div>
+        </div>
+
+        <button class="btn-secondary" onclick="go('s-home')">← Back to Home</button>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════
+         STATUS: DENIED
+    ════════════════════════════ -->
+    <div class="scr" id="s-status-denied">
+      <div class="sbar lt" style="background:var(--navy)"><span>9:41</span><div class="si"><span>●●●</span><span>🔋</span></div></div>
+      <div class="hero"><button class="back" onclick="go('s-status-check')">←</button><h2>Application Status</h2><p>sarah.johnson [at] gmail.com</p></div>
+      <div class="fb" style="padding-top:20px;">
+
+        <div style="background:white;border:2px solid #fca5a5;border-radius:16px;padding:24px;text-align:center;margin-bottom:14px;">
+          <div style="width:64px;height:64px;border-radius:50%;background:#fef2f2;display:flex;align-items:center;justify-content:center;font-size:30px;margin:0 auto 14px;">💌</div>
+          <div style="font-family:'Merriweather',serif;font-size:18px;font-weight:700;color:#991b1b;margin-bottom:6px;">Application Not Approved</div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.6;">We're sorry — your application was not approved for the 2025 program. Please see the reason below.</div>
+        </div>
+
+        <!-- Reason -->
+        <div style="background:white;border:1.5px solid var(--border);border-radius:14px;padding:16px;margin-bottom:14px;">
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:8px;">Reason</div>
+          <div style="font-size:13px;color:var(--text);line-height:1.7;">Household income exceeds the program eligibility limit for a family of your size. Our program is limited to families at or below 200% of the federal poverty level.</div>
+        </div>
+
+        <!-- Other resources -->
+        <div style="background:var(--lt-gray);border-radius:14px;padding:16px;margin-bottom:14px;">
+          <div style="font-size:12px;font-weight:700;color:var(--navy);margin-bottom:8px;">Other Resources That May Help</div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.7;">• Wayne County Community Action Agency<br>• Salvation Army Holiday Assistance<br>• Plymouth-Canton Schools Family Resource Center<br>• United Way 2-1-1 Helpline</div>
+        </div>
+
+        <div style="background:white;border:1.5px solid var(--border);border-radius:12px;padding:14px;margin-bottom:14px;">
+          <div style="font-size:11px;font-weight:700;color:var(--navy);margin-bottom:4px;">Questions about this decision?</div>
+          <div style="font-size:11px;color:var(--muted);line-height:1.6;">Contact us at cantongoodfellows [at] gmail.com or 734-664-1044.</div>
+        </div>
+
+        <button class="btn-secondary" onclick="go('s-home')">← Back to Home</button>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════
+         NOTIFICATION TEMPLATES
+    ════════════════════════════ -->
+    <div class="scr" id="s-notifications">
+      <div class="sbar lt" style="background:var(--navy)"><span>9:41</span><div class="si"><span>●●●</span><span>🔋</span></div></div>
+      <div class="hero">
+        <button class="back" onclick="go('s-home')">←</button>
+        <h2>Notification Templates</h2>
+        <p>Automated emails &amp; texts sent to families</p>
+      </div>
+      <div class="fb" style="padding-top:16px;">
+
+        <div style="font-size:11px;color:var(--muted);margin-bottom:14px;line-height:1.6;">These messages are sent automatically at each stage. Tap any to preview the full email and matching text.</div>
+
+        <!-- Template tabs -->
+        <div style="display:flex;flex-direction:column;gap:10px;">
+
+          <!-- 1. Application received -->
+          <div style="background:white;border:1.5px solid var(--border);border-radius:14px;overflow:hidden;">
+            <div style="background:#eff6ff;padding:14px 16px;display:flex;align-items:center;gap:12px;" onclick="toggleNotif('notif-1')">
+              <div style="width:36px;height:36px;border-radius:10px;background:#1e40af;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">📬</div>
+              <div style="flex:1;"><div style="font-size:12px;font-weight:700;color:#1e40af;">1 — Application Received</div><div style="font-size:11px;color:var(--muted);margin-top:1px;">Sent immediately on submission</div></div>
+              <div style="font-size:18px;color:var(--muted);">›</div>
+            </div>
+            <div id="notif-1" style="display:none;padding:16px;border-top:1px solid var(--border);">
+              <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:8px;">📧 Email</div>
+              <div style="background:var(--lt-gray);border-radius:10px;padding:14px;font-size:12px;line-height:1.8;margin-bottom:12px;">
+                <strong>Subject:</strong> Canton Goodfellows — We Received Your Application ✓<br><br>
+                Dear <em>Sarah</em>,<br><br>
+                Thank you for applying to the Canton Goodfellows 2025 Christmas Program. We've received your application and it's now in our review queue.<br><br>
+                <strong>Your reference:</strong> CGF-2025-0847<br>
+                <strong>Submitted:</strong> October 3, 2025<br><br>
+                You don't need to do anything right now. We'll email and text you as soon as a decision has been made — no later than November 1.<br><br>
+                You can check your status anytime at <strong>cantongoodfellows.org/status</strong><br><br>
+                Questions? Reply to this email or call 734-664-1044.<br><br>
+                — Canton Goodfellows
+              </div>
+              <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:8px;">📱 Text Message</div>
+              <div style="background:#dcfce7;border-radius:10px;padding:14px;font-size:12px;line-height:1.8;">
+                Canton Goodfellows: We received your 2025 application! Ref: CGF-2025-0847. We'll text you with a decision by Nov 1. Check status: cantongoodfellows.org/status
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. Under review -->
+          <div style="background:white;border:1.5px solid var(--border);border-radius:14px;overflow:hidden;">
+            <div style="background:#fffbeb;padding:14px 16px;display:flex;align-items:center;gap:12px;" onclick="toggleNotif('notif-2')">
+              <div style="width:36px;height:36px;border-radius:10px;background:#f59e0b;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">🔎</div>
+              <div style="flex:1;"><div style="font-size:12px;font-weight:700;color:#92400e;">2 — Under Review</div><div style="font-size:11px;color:var(--muted);margin-top:1px;">Sent when admin begins reviewing</div></div>
+              <div style="font-size:18px;color:var(--muted);">›</div>
+            </div>
+            <div id="notif-2" style="display:none;padding:16px;border-top:1px solid var(--border);">
+              <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:8px;">📧 Email</div>
+              <div style="background:var(--lt-gray);border-radius:10px;padding:14px;font-size:12px;line-height:1.8;margin-bottom:12px;">
+                <strong>Subject:</strong> Canton Goodfellows — Your Application Is Being Reviewed<br><br>
+                Dear <em>Sarah</em>,<br><br>
+                Good news — your application (CGF-2025-0847) is now being reviewed by our team. We're verifying your eligibility and documents.<br><br>
+                We'll send your decision by <strong>November 1</strong>. You'll hear from us by both email and text.<br><br>
+                Check your status anytime: <strong>cantongoodfellows.org/status</strong><br><br>
+                — Canton Goodfellows
+              </div>
+              <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:8px;">📱 Text Message</div>
+              <div style="background:#dcfce7;border-radius:10px;padding:14px;font-size:12px;line-height:1.8;">
+                Canton Goodfellows: Your 2025 application is under review. Decision coming by Nov 1. Check status: cantongoodfellows.org/status
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. Approved -->
+          <div style="background:white;border:1.5px solid var(--border);border-radius:14px;overflow:hidden;">
+            <div style="background:var(--green-bg);padding:14px 16px;display:flex;align-items:center;gap:12px;" onclick="toggleNotif('notif-3')">
+              <div style="width:36px;height:36px;border-radius:10px;background:var(--green);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">🎉</div>
+              <div style="flex:1;"><div style="font-size:12px;font-weight:700;color:var(--green);">3 — Approved</div><div style="font-size:11px;color:var(--muted);margin-top:1px;">Sent when admin approves &amp; assigns family number</div></div>
+              <div style="font-size:18px;color:var(--muted);">›</div>
+            </div>
+            <div id="notif-3" style="display:none;padding:16px;border-top:1px solid var(--border);">
+              <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:8px;">📧 Email</div>
+              <div style="background:var(--lt-gray);border-radius:10px;padding:14px;font-size:12px;line-height:1.8;margin-bottom:12px;">
+                <strong>Subject:</strong> 🎄 Canton Goodfellows — Your 2025 Application is APPROVED!<br><br>
+                Dear <em>Sarah</em>,<br><br>
+                Great news! Your family has been approved for the Canton Goodfellows 2025 Christmas Program.<br><br>
+                <strong>Your Family Number: F103</strong><br>
+                Emma → F103-A<br>
+                Marcus → F103-B<br><br>
+                Please save this email — you'll need your family number at Pickup Day.<br><br>
+                <strong>📦 Pickup Day Details:</strong><br>
+                Saturday, December 7, 2025<br>
+                9:00 AM – 12:00 PM<br>
+                Canton Township Municipal Building<br>
+                Check in using family number F103<br><br>
+                Questions? Call 734-664-1044.<br><br>
+                Thank you for trusting us — we can't wait to make this Christmas special for your family! 🎁<br><br>
+                — Canton Goodfellows
+              </div>
+              <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:8px;">📱 Text Message</div>
+              <div style="background:#dcfce7;border-radius:10px;padding:14px;font-size:12px;line-height:1.8;">
+                🎄 Canton Goodfellows: APPROVED! Your family number is F103. Pickup Day: Sat Dec 7, 9AM-12PM, Canton Twp Municipal Building. Save this text! Questions: 734-664-1044
+              </div>
+            </div>
+          </div>
+
+          <!-- 4. Denied -->
+          <div style="background:white;border:1.5px solid var(--border);border-radius:14px;overflow:hidden;">
+            <div style="background:#fef2f2;padding:14px 16px;display:flex;align-items:center;gap:12px;" onclick="toggleNotif('notif-4')">
+              <div style="width:36px;height:36px;border-radius:10px;background:#dc2626;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">💌</div>
+              <div style="flex:1;"><div style="font-size:12px;font-weight:700;color:#991b1b;">4 — Not Approved</div><div style="font-size:11px;color:var(--muted);margin-top:1px;">Sent when admin denies application</div></div>
+              <div style="font-size:18px;color:var(--muted);">›</div>
+            </div>
+            <div id="notif-4" style="display:none;padding:16px;border-top:1px solid var(--border);">
+              <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:8px;">📧 Email</div>
+              <div style="background:var(--lt-gray);border-radius:10px;padding:14px;font-size:12px;line-height:1.8;margin-bottom:12px;">
+                <strong>Subject:</strong> Canton Goodfellows — 2025 Application Update<br><br>
+                Dear <em>Sarah</em>,<br><br>
+                Thank you for applying to the Canton Goodfellows 2025 Christmas Program. After reviewing your application, we're unable to approve it at this time.<br><br>
+                <strong>Reason:</strong> Household income exceeds the program eligibility limit for a family of your size.<br><br>
+                We understand this is disappointing and we're sorry we can't help this year. You may find assistance through:<br>
+                • Wayne County Community Action Agency<br>
+                • Salvation Army Holiday Assistance<br>
+                • United Way 2-1-1 Helpline<br><br>
+                Questions? Reply to this email or call 734-664-1044.<br><br>
+                — Canton Goodfellows
+              </div>
+              <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:8px;">📱 Text Message</div>
+              <div style="background:#dcfce7;border-radius:10px;padding:14px;font-size:12px;line-height:1.8;">
+                Canton Goodfellows: We reviewed your 2025 application. Unfortunately we're unable to approve it this year. Check your email for details and alternative resources.
+              </div>
+            </div>
+          </div>
+
+          <!-- 5. Pickup reminder -->
+          <div style="background:white;border:1.5px solid var(--border);border-radius:14px;overflow:hidden;">
+            <div style="background:#fef9ec;padding:14px 16px;display:flex;align-items:center;gap:12px;" onclick="toggleNotif('notif-5')">
+              <div style="width:36px;height:36px;border-radius:10px;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">📦</div>
+              <div style="flex:1;"><div style="font-size:12px;font-weight:700;color:#6b4f00;">5 — Pickup Day Reminder</div><div style="font-size:11px;color:var(--muted);margin-top:1px;">Sent 2 days before Pickup Day</div></div>
+              <div style="font-size:18px;color:var(--muted);">›</div>
+            </div>
+            <div id="notif-5" style="display:none;padding:16px;border-top:1px solid var(--border);">
+              <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:8px;">📧 Email</div>
+              <div style="background:var(--lt-gray);border-radius:10px;padding:14px;font-size:12px;line-height:1.8;margin-bottom:12px;">
+                <strong>Subject:</strong> 🎁 Reminder — Canton Goodfellows Pickup Day is THIS Saturday!<br><br>
+                Dear <em>Sarah</em>,<br><br>
+                Just a reminder — Pickup Day is this Saturday! Your family's gifts will be ready and waiting.<br><br>
+                <strong>📦 Your Pickup Details:</strong><br>
+                Saturday, December 7, 2025<br>
+                9:00 AM – 12:00 PM<br>
+                Canton Township Municipal Building<br>
+                1150 Canton Center Road, Canton MI 48188<br><br>
+                <strong>Check in with: Family Number F103</strong><br><br>
+                Please bring this email or pull up your status in the app. Gifts will be unwrapped — we'll provide wrapping paper and tape.<br><br>
+                We look forward to seeing you! 🎄<br><br>
+                — Canton Goodfellows<br>
+                734-664-1044
+              </div>
+              <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:8px;">📱 Text Message</div>
+              <div style="background:#dcfce7;border-radius:10px;padding:14px;font-size:12px;line-height:1.8;">
+                🎁 Canton Goodfellows: Pickup Day is THIS Saturday Dec 7, 9AM-12PM! Canton Twp Municipal Building. Check in as Family F103. See you there! 🎄
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /templates -->
+      </div>
+    </div>
+
+    <!-- ════════════════════════════
+         ABOUT GOODFELLOWS
+    ════════════════════════════ -->
+    <div class="scr" id="s-about">
+      <div class="sbar lt" style="background:var(--navy)">
+        <span>9:41</span><div class="si"><span>●●●</span><span>🔋</span></div>
+      </div>
+
+      <!-- Hero -->
+      <div class="hero" style="padding-bottom:28px;">
+        <button class="back" onclick="go('s-home')">←</button>
+        <h2>About Goodfellows</h2>
+        <p>Est. 1940s · Canton Township, MI</p>
+      </div>
+
+      <!-- Mission banner -->
+      <div style="background:var(--navy-dark);padding:20px 20px 24px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.08);">
+        <div style="font-family:'Merriweather',serif;font-size:20px;font-weight:900;color:white;line-height:1.3;margin-bottom:8px;">"No Child Without<br>a Christmas"</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.6);line-height:1.6;max-width:300px;margin:0 auto;">A 501(c)(3) nonprofit dedicated to providing Christmas gifts and food to children in Canton, Michigan — regardless of race or religion.</div>
+      </div>
+
+      <!-- Impact stats -->
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;background:white;border-bottom:1px solid var(--border);">
+        <div style="padding:16px 8px;text-align:center;border-right:1px solid var(--border);">
+          <div style="font-family:'Merriweather',serif;font-size:22px;font-weight:700;color:var(--navy);">70+</div>
+          <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:2px;">Years Serving</div>
+        </div>
+        <div style="padding:16px 8px;text-align:center;border-right:1px solid var(--border);">
+          <div style="font-family:'Merriweather',serif;font-size:22px;font-weight:700;color:var(--navy);">88%</div>
+          <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:2px;">Goes to Program</div>
+        </div>
+        <div style="padding:16px 8px;text-align:center;">
+          <div style="font-family:'Merriweather',serif;font-size:22px;font-weight:700;color:var(--navy);">100%</div>
+          <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:2px;">Volunteers</div>
+        </div>
+      </div>
+
+      <!-- Tab navigation -->
+      <div style="display:flex;background:white;border-bottom:1px solid var(--border);overflow-x:auto;scrollbar-width:none;" id="about-tabs">
+        <div class="ctab active" onclick="switchAbout('about-mission',this)" style="font-size:11px;">📖 Mission</div>
+        <div class="ctab" onclick="switchAbout('about-how',this)" style="font-size:11px;">⚙️ How It Works</div>
+        <div class="ctab" onclick="switchAbout('about-history',this)" style="font-size:11px;">📜 History</div>
+        <div class="ctab" onclick="switchAbout('about-board',this)" style="font-size:11px;">👥 Board</div>
+      </div>
+
+      <!-- TAB: MISSION -->
+      <div id="about-mission" class="fb" style="padding-top:20px;">
+
+        <div style="background:white;border:1.5px solid var(--border);border-radius:14px;padding:18px;margin-bottom:14px;">
+          <div style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:10px;">What We Do</div>
+          <div style="font-size:13px;color:var(--text);line-height:1.75;">Canton Goodfellows provides Christmas gifts to children in Canton at Christmas time. We also provide gift cards so parents can purchase food for the holiday.</div>
+          <div style="font-size:13px;color:var(--text);line-height:1.75;margin-top:10px;">We provide this assistance to families <strong>without regard to religious preference</strong>, and all of our members — including board members — are unpaid volunteers.</div>
+        </div>
+
+        <!-- Parent quote -->
+        <div style="background:var(--navy);border-radius:14px;padding:18px;margin-bottom:14px;position:relative;overflow:hidden;">
+          <div style="position:absolute;top:-10px;left:10px;font-size:60px;color:rgba(255,255,255,0.08);font-family:'Merriweather',serif;line-height:1;">"</div>
+          <div style="font-size:13px;color:rgba(255,255,255,0.9);line-height:1.7;font-style:italic;position:relative;">Thanks for making my kids so happy. Seeing the smiles on their faces — these are the moments that live forever in our minds.</div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.5);margin-top:10px;">— Canton parent, 2024</div>
+        </div>
+
+        <!-- What families receive -->
+        <div style="background:white;border:1.5px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:14px;">
+          <div style="background:var(--lt-gray);padding:12px 16px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);">What Approved Families Receive</div>
+          <div style="padding:4px 0;">
+            <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--lt-gray);">
+              <span style="font-size:22px;">🎁</span>
+              <div>
+                <div style="font-size:13px;font-weight:600;color:var(--text);">Age-appropriate gifts for each child</div>
+                <div style="font-size:11px;color:var(--muted);margin-top:2px;">Sponsored by community members</div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--lt-gray);">
+              <span style="font-size:22px;">👕</span>
+              <div>
+                <div style="font-size:13px;font-weight:600;color:var(--text);">Gift card for clothing</div>
+                <div style="font-size:11px;color:var(--muted);margin-top:2px;">For each child</div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--lt-gray);">
+              <span style="font-size:22px;">🥫</span>
+              <div>
+                <div style="font-size:13px;font-weight:600;color:var(--text);">Nonperishable food box</div>
+                <div style="font-size:11px;color:var(--muted);margin-top:2px;">Plus food gift cards for the holiday</div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;">
+              <span style="font-size:22px;">🎀</span>
+              <div>
+                <div style="font-size:13px;font-weight:600;color:var(--text);">Gift wrapping paper &amp; tape</div>
+                <div style="font-size:11px;color:var(--muted);margin-top:2px;">So parents can wrap gifts themselves</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Financial transparency -->
+        <div style="background:var(--green-bg);border:1.5px solid #a3d4b5;border-radius:14px;padding:16px;margin-bottom:14px;">
+          <div style="font-size:12px;font-weight:700;color:var(--navy);margin-bottom:10px;">💰 Financial Transparency</div>
+          <div style="margin-bottom:8px;">
+            <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;"><span style="color:var(--text);">Program spending</span><span style="font-weight:700;color:var(--green);">88%</span></div>
+            <div style="height:8px;background:rgba(255,255,255,0.5);border-radius:99px;overflow:hidden;"><div style="width:88%;height:100%;background:var(--green);border-radius:99px;"></div></div>
+          </div>
+          <div style="margin-bottom:8px;">
+            <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;"><span style="color:var(--text);">Supplies, dues &amp; insurance</span><span style="font-weight:700;color:var(--muted);">11%</span></div>
+            <div style="height:8px;background:rgba(255,255,255,0.5);border-radius:99px;overflow:hidden;"><div style="width:11%;height:100%;background:var(--muted);border-radius:99px;"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;"><span style="color:var(--text);">Fundraising</span><span style="font-weight:700;color:var(--muted);">1%</span></div>
+            <div style="height:8px;background:rgba(255,255,255,0.5);border-radius:99px;overflow:hidden;"><div style="width:1%;height:100%;background:var(--muted);border-radius:99px;"></div></div>
+          </div>
+          <div style="font-size:11px;color:var(--muted);margin-top:10px;">Based on 2024 Campaign Financial Report · Fiscal year Apr 1 – Mar 31</div>
+        </div>
+
+        <button class="btn-primary" onclick="go('s-step1')">Apply for Assistance →</button>
+        <button class="btn-secondary" onclick="go('s-sponsor')">Sponsor a Child →</button>
+      </div>
+
+      <!-- TAB: HOW IT WORKS -->
+      <div id="about-how" class="fb" style="display:none;padding-top:20px;">
+        <div style="font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.6;">Each year the program runs on a set timeline, bringing together applicant families, community sponsors, and our volunteers.</div>
+
+        <!-- Timeline -->
+        <div style="position:relative;padding-left:28px;margin-bottom:20px;">
+          <div style="position:absolute;left:8px;top:0;bottom:0;width:2px;background:var(--border);"></div>
+
+          <div style="position:relative;margin-bottom:20px;">
+            <div style="position:absolute;left:-24px;top:2px;width:14px;height:14px;border-radius:50%;background:var(--navy);border:2px solid white;box-shadow:0 0 0 2px var(--navy);"></div>
+            <div style="font-size:11px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:0.5px;">Late August</div>
+            <div style="font-size:13px;font-weight:600;color:var(--text);margin-top:2px;">Applications Open</div>
+            <div style="font-size:12px;color:var(--muted);margin-top:2px;line-height:1.5;">Online-only applications become available for Canton families to apply for Christmas assistance.</div>
+          </div>
+
+          <div style="position:relative;margin-bottom:20px;">
+            <div style="position:absolute;left:-24px;top:2px;width:14px;height:14px;border-radius:50%;background:var(--navy);border:2px solid white;box-shadow:0 0 0 2px var(--navy);"></div>
+            <div style="font-size:11px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:0.5px;">Mid-October</div>
+            <div style="font-size:13px;font-weight:600;color:var(--text);margin-top:2px;">Application Deadline</div>
+            <div style="font-size:12px;color:var(--muted);margin-top:2px;line-height:1.5;">Applications are reviewed on a first-come, first-served basis and screened against income guidelines.</div>
+          </div>
+
+          <div style="position:relative;margin-bottom:20px;">
+            <div style="position:absolute;left:-24px;top:2px;width:14px;height:14px;border-radius:50%;background:var(--gold);border:2px solid white;box-shadow:0 0 0 2px var(--gold);"></div>
+            <div style="font-size:11px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:0.5px;">Early October</div>
+            <div style="font-size:13px;font-weight:600;color:var(--text);margin-top:2px;">Sponsor Matching Opens</div>
+            <div style="font-size:12px;color:var(--muted);margin-top:2px;line-height:1.5;">Community members and organizations claim children to sponsor, purchasing toys from the child's wish list.</div>
+          </div>
+
+          <div style="position:relative;margin-bottom:20px;">
+            <div style="position:absolute;left:-24px;top:2px;width:14px;height:14px;border-radius:50%;background:var(--green);border:2px solid white;box-shadow:0 0 0 2px var(--green);"></div>
+            <div style="font-size:11px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:0.5px;">November 1</div>
+            <div style="font-size:13px;font-weight:600;color:var(--text);margin-top:2px;">Families Notified</div>
+            <div style="font-size:12px;color:var(--muted);margin-top:2px;line-height:1.5;">Approved families receive an email with their family number and child IDs. Save this email for Pickup Day.</div>
+          </div>
+
+          <div style="position:relative;margin-bottom:20px;">
+            <div style="position:absolute;left:-24px;top:2px;width:14px;height:14px;border-radius:50%;background:var(--green);border:2px solid white;box-shadow:0 0 0 2px var(--green);"></div>
+            <div style="font-size:11px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:0.5px;">Early December</div>
+            <div style="font-size:13px;font-weight:600;color:var(--text);margin-top:2px;">Gifts Prepared</div>
+            <div style="font-size:12px;color:var(--muted);margin-top:2px;line-height:1.5;">Volunteers prepare gift and food boxes. Any unsponsored children receive gifts purchased using donation funds.</div>
+          </div>
+
+          <div style="position:relative;">
+            <div style="position:absolute;left:-24px;top:2px;width:14px;height:14px;border-radius:50%;background:var(--red);border:2px solid white;box-shadow:0 0 0 2px var(--red);"></div>
+            <div style="font-size:11px;font-weight:700;color:var(--red);text-transform:uppercase;letter-spacing:0.5px;">December Saturday</div>
+            <div style="font-size:13px;font-weight:600;color:var(--text);margin-top:2px;">Family Pickup Day</div>
+            <div style="font-size:12px;color:var(--muted);margin-top:2px;line-height:1.5;">Approved families pick up their packages 9 AM–Noon at Canton Township Administration Building. Bring your approval email.</div>
+          </div>
+        </div>
+
+        <!-- Volunteer quote -->
+        <div style="background:var(--lt-gray);border-radius:14px;padding:16px;margin-bottom:14px;border-left:4px solid var(--navy);">
+          <div style="font-size:13px;color:var(--text);line-height:1.7;font-style:italic;">"Every effort was made to see that all children would receive what they needed and have at least one wish granted. It's such a noble mission."</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:8px;">— Canton Goodfellows volunteer</div>
+        </div>
+
+        <button class="btn-primary" onclick="go('s-step1')">Apply for Assistance →</button>
+        <button class="btn-secondary" onclick="go('s-sponsor')">Sponsor a Child →</button>
+      </div>
+
+      <!-- TAB: HISTORY -->
+      <div id="about-history" class="fb" style="display:none;padding-top:20px;">
+        <div style="font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.6;">For over 70 years, Canton Goodfellows has grown from a door-to-door effort into a fully organized community institution.</div>
+
+        <div style="background:white;border:1.5px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:14px;">
+
+          <div style="padding:16px;border-bottom:1px solid var(--lt-gray);">
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:4px;">1940s</div>
+            <div style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:4px;">The Beginning</div>
+            <div style="font-size:12px;color:var(--text);line-height:1.6;">Canton residents Edward Hauk and Robert Waldecker — volunteers with Plymouth Goodfellows — founded Canton Goodfellows. In the early years, the two men went door-to-door asking for donations.</div>
+          </div>
+
+          <div style="padding:16px;border-bottom:1px solid var(--lt-gray);">
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:4px;">1954</div>
+            <div style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:4px;">The Paper Sale</div>
+            <div style="font-size:12px;color:var(--text);line-height:1.6;">A Canton Goodfellows paper was printed and sold for donations. Money raised supported the mission of "No Child Without a Christmas."</div>
+          </div>
+
+          <div style="padding:16px;border-bottom:1px solid var(--lt-gray);">
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:4px;">1980s–2012</div>
+            <div style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:4px;">Nancy Spencer's Era</div>
+            <div style="font-size:12px;color:var(--text);line-height:1.6;">Nancy Spencer began volunteering in the mid-1980s and became president in the 1990s. She grew the program significantly, reaching schools, businesses, and the wider community. She started the Sponsor-a-Child program, which continues today.</div>
+          </div>
+
+          <div style="padding:16px;border-bottom:1px solid var(--lt-gray);">
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:4px;">2013–2018</div>
+            <div style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:4px;">Modernization Begins</div>
+            <div style="font-size:12px;color:var(--text);line-height:1.6;">John Spencer was voted president. Members joined forces to convert manual record-keeping into a computerized format, led by Natalie Anderson-Theisen.</div>
+          </div>
+
+          <div style="padding:16px;border-bottom:1px solid var(--lt-gray);">
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:4px;">2023</div>
+            <div style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:4px;">Online Applications Launch</div>
+            <div style="font-size:12px;color:var(--text);line-height:1.6;">Younger members streamlined data entry by building a new online application process. The transition was a huge success, reducing manual work significantly.</div>
+          </div>
+
+          <div style="padding:16px;">
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--navy);margin-bottom:4px;">Today</div>
+            <div style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:4px;">Continuing the Mission</div>
+            <div style="font-size:12px;color:var(--text);line-height:1.6;">Canton Goodfellows continues to serve Canton families, powered entirely by community volunteers, with no administrative salaries — every dollar raised goes back to the children.</div>
+          </div>
+        </div>
+        <button class="btn-secondary" onclick="go('s-home')">← Back to Home</button>
+      </div>
+
+      <!-- TAB: BOARD -->
+      <div id="about-board" class="fb" style="display:none;padding-top:20px;">
+        <div style="font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.6;">Board members are elected each year at the Annual Meeting in March. All members are unpaid volunteers.</div>
+
+        <!-- Board members -->
+        <div style="background:white;border:1.5px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:14px;">
+
+          <div style="display:flex;align-items:center;gap:14px;padding:14px 16px;border-bottom:1px solid var(--lt-gray);">
+            <div style="width:42px;height:42px;border-radius:12px;background:var(--navy);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">👑</div>
+            <div>
+              <div style="font-size:13px;font-weight:700;color:var(--navy);">Kelli Lauria</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:1px;">President</div>
+            </div>
+          </div>
+
+          <div style="display:flex;align-items:center;gap:14px;padding:14px 16px;border-bottom:1px solid var(--lt-gray);">
+            <div style="width:42px;height:42px;border-radius:12px;background:var(--lt-gray);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">🤝</div>
+            <div>
+              <div style="font-size:13px;font-weight:700;color:var(--text);">Nila Patel</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:1px;">Vice President</div>
+            </div>
+          </div>
+
+          <div style="display:flex;align-items:center;gap:14px;padding:14px 16px;border-bottom:1px solid var(--lt-gray);">
+            <div style="width:42px;height:42px;border-radius:12px;background:var(--lt-gray);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">💰</div>
+            <div>
+              <div style="font-size:13px;font-weight:700;color:var(--text);">Michael Theisen</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:1px;">Treasurer</div>
+            </div>
+          </div>
+
+          <div style="display:flex;align-items:center;gap:14px;padding:14px 16px;border-bottom:1px solid var(--lt-gray);">
+            <div style="width:42px;height:42px;border-radius:12px;background:var(--lt-gray);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">⭐</div>
+            <div>
+              <div style="font-size:13px;font-weight:700;color:var(--text);">Kal Hakkani</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:1px;">Director</div>
+            </div>
+          </div>
+
+          <div style="display:flex;align-items:center;gap:14px;padding:14px 16px;border-bottom:1px solid var(--lt-gray);">
+            <div style="width:42px;height:42px;border-radius:12px;background:var(--lt-gray);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">⭐</div>
+            <div>
+              <div style="font-size:13px;font-weight:700;color:var(--text);">John Spencer</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:1px;">Director</div>
+            </div>
+          </div>
+
+          <div style="display:flex;align-items:center;gap:14px;padding:14px 16px;border-bottom:1px solid var(--lt-gray);">
+            <div style="width:42px;height:42px;border-radius:12px;background:var(--lt-gray);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">⭐</div>
+            <div>
+              <div style="font-size:13px;font-weight:700;color:var(--text);">Cam Nellett</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:1px;">Director</div>
+            </div>
+          </div>
+
+          <div style="display:flex;align-items:center;gap:14px;padding:14px 16px;">
+            <div style="width:42px;height:42px;border-radius:12px;background:var(--lt-gray);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">⭐</div>
+            <div>
+              <div style="font-size:13px;font-weight:700;color:var(--text);">Jayshri Bhakta</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:1px;">Director</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Meetings -->
+        <div style="background:white;border:1.5px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:14px;">
+          <div style="background:var(--lt-gray);padding:12px 16px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);">📅 2025 Meeting Schedule</div>
+          <div style="padding:4px 0;">
+            <div style="display:flex;justify-content:space-between;padding:10px 16px;border-bottom:1px solid var(--lt-gray);font-size:12px;"><span style="color:var(--text);">Annual Meeting</span><span style="font-weight:600;color:var(--navy);">March 20</span></div>
+            <div style="display:flex;justify-content:space-between;padding:10px 16px;border-bottom:1px solid var(--lt-gray);font-size:12px;"><span style="color:var(--text);">Summer Meeting</span><span style="font-weight:600;color:var(--navy);">August 14</span></div>
+            <div style="display:flex;justify-content:space-between;padding:10px 16px;border-bottom:1px solid var(--lt-gray);font-size:12px;"><span style="color:var(--text);">September Meeting</span><span style="font-weight:600;color:var(--navy);">September 18</span></div>
+            <div style="display:flex;justify-content:space-between;padding:10px 16px;border-bottom:1px solid var(--lt-gray);font-size:12px;"><span style="color:var(--text);">October Meeting</span><span style="font-weight:600;color:var(--navy);">October 9</span></div>
+            <div style="display:flex;justify-content:space-between;padding:10px 16px;font-size:12px;"><span style="color:var(--text);">November Meeting</span><span style="font-weight:600;color:var(--navy);">November 13</span></div>
+          </div>
+        </div>
+        <div style="background:var(--lt-gray);border-radius:12px;padding:14px;margin-bottom:14px;">
+          <div style="font-size:12px;color:var(--text);line-height:1.6;">📍 <strong>Canton Municipal Building</strong><br>1105 Canton Center Rd · Room C (Lower Level)<br>Thursdays at 7:00 PM · All are welcome!</div>
+        </div>
+
+        <!-- Join CTA -->
+        <div style="background:var(--navy);border-radius:14px;padding:18px;margin-bottom:14px;text-align:center;">
+          <div style="font-size:14px;font-weight:700;color:white;margin-bottom:6px;">Join Our Team</div>
+          <div style="font-size:12px;color:rgba(255,255,255,0.7);line-height:1.6;margin-bottom:14px;">We're looking for additional members willing to help implement new ideas. Come to a meeting and find out more!</div>
+          <div style="background:white;border-radius:10px;padding:12px;text-align:left;">
+            <div style="font-size:11px;color:var(--muted);margin-bottom:2px;">Contact us</div>
+            <div style="font-size:13px;font-weight:700;color:var(--navy);"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c3a0a2adb7acada4acaca7a5a6afafacb4b083a4aea2aaafeda0acae">[email&#160;protected]</a></div>
+            <div style="font-size:13px;font-weight:600;color:var(--navy);margin-top:2px;">734-664-1044</div>
+          </div>
+        </div>
+        <button class="btn-secondary" onclick="go('s-home')">← Back to Home</button>
+      </div>
+
+    </div><!-- /s-about -->
+
+    <!-- ════════════════════════════
+         DONATE & GET INVOLVED
+    ════════════════════════════ -->
+    <div class="scr" id="s-involved">
+      <div class="sbar lt" style="background:var(--navy)">
+        <span>9:41</span><div class="si"><span>●●●</span><span>🔋</span></div>
+      </div>
+
+      <!-- Hero -->
+      <div class="hero" style="padding-bottom:28px;">
+        <button class="back" onclick="go('s-home')">←</button>
+        <h2>Donate &amp; Get Involved</h2>
+        <p>Help us make Christmas happen for Canton kids</p>
+      </div>
+
+      <!-- Mission pull quote -->
+      <div style="background:var(--navy-dark);padding:18px 20px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.08);">
+        <div style="font-size:13px;color:rgba(255,255,255,0.8);line-height:1.7;font-style:italic;max-width:300px;margin:0 auto;">"Everything that comes into this organization goes right back to the children and families who need the help."</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:8px;">— Canton Goodfellows volunteer</div>
+      </div>
+
+      <!-- Tab nav -->
+      <div style="display:flex;background:white;border-bottom:1px solid var(--border);overflow-x:auto;scrollbar-width:none;" id="involved-tabs">
+        <div class="ctab active" onclick="switchInvolved('inv-sponsor',this)" style="font-size:11px;white-space:nowrap;">⭐ Sponsor</div>
+        <div class="ctab" onclick="switchInvolved('inv-volunteer',this)" style="font-size:11px;white-space:nowrap;">🙋 Volunteer</div>
+        <div class="ctab" onclick="switchInvolved('inv-donate',this)" style="font-size:11px;white-space:nowrap;">💛 Donate</div>
+        <div class="ctab" onclick="switchInvolved('inv-kroger',this)" style="font-size:11px;white-space:nowrap;">🛒 Kroger</div>
+      </div>
+
+      <!-- ── TAB: SPONSOR ── -->
+      <div id="inv-sponsor" class="fb" style="padding-top:20px;">
+
+        <div style="background:var(--navy);border-radius:16px;padding:20px;margin-bottom:14px;text-align:center;">
+          <div style="font-size:36px;margin-bottom:10px;">⭐</div>
+          <div style="font-family:'Merriweather',serif;font-size:17px;font-weight:700;color:white;margin-bottom:8px;">Sponsor a Child</div>
+          <div style="font-size:12px;color:rgba(255,255,255,0.75);line-height:1.7;">Purchase Christmas gifts for a child in Canton. Open to anyone — you don't need to be a Canton resident or business.</div>
+        </div>
+
+        <!-- What sponsorship includes -->
+        <div style="background:white;border:1.5px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:14px;">
+          <div style="background:var(--lt-gray);padding:12px 16px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);">What You'll Provide</div>
+          <div style="padding:4px 0;">
+            <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--lt-gray);">
+              <span style="font-size:22px;flex-shrink:0;">🎁</span>
+              <div><div style="font-size:13px;font-weight:600;color:var(--text);">4 toys or gifts</div><div style="font-size:11px;color:var(--muted);margin-top:2px;">Selected from the child's personalized wish list</div></div>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;">
+              <span style="font-size:22px;flex-shrink:0;">👕</span>
+              <div><div style="font-size:13px;font-weight:600;color:var(--text);">Store gift card for clothing</div><div style="font-size:11px;color:var(--muted);margin-top:2px;">So parents can purchase what the child needs</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cost + flexibility -->
+        <div style="background:var(--gold-bg);border:1.5px solid #e5d080;border-radius:14px;padding:16px;margin-bottom:14px;">
+          <div style="font-size:12px;font-weight:700;color:var(--navy);margin-bottom:6px;">💰 Flexible Giving</div>
+          <div style="font-size:12px;color:var(--text);line-height:1.7;">Full sponsorship typically costs around <strong>$200</strong>. Sponsors may give whatever their budget allows — any unmet gift requests will be filled in by Canton Goodfellows using donated funds.</div>
+        </div>
+
+        <!-- Timeline -->
+        <div style="background:white;border:1.5px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:14px;">
+          <div style="background:var(--lt-gray);padding:12px 16px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);">How It Works</div>
+          <div style="padding:4px 0;">
+            <div style="display:flex;align-items:flex-start;gap:12px;padding:12px 16px;border-bottom:1px solid var(--lt-gray);">
+              <div style="width:24px;height:24px;border-radius:50%;background:var(--navy);color:white;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">1</div>
+              <div><div style="font-size:12px;font-weight:600;color:var(--text);">Email us in mid-September</div><div style="font-size:11px;color:var(--muted);margin-top:2px;">Let us know how many children you'd like to sponsor</div></div>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:12px;padding:12px 16px;border-bottom:1px solid var(--lt-gray);">
+              <div style="width:24px;height:24px;border-radius:50%;background:var(--navy);color:white;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">2</div>
+              <div><div style="font-size:12px;font-weight:600;color:var(--text);">Receive a child assignment</div><div style="font-size:11px;color:var(--muted);margin-top:2px;">End of September, first-come first-served. You'll get age, gender, interests, and wish list.</div></div>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:12px;padding:12px 16px;border-bottom:1px solid var(--lt-gray);">
+              <div style="width:24px;height:24px;border-radius:50%;background:var(--navy);color:white;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">3</div>
+              <div><div style="font-size:12px;font-weight:600;color:var(--text);">Shop for gifts</div><div style="font-size:11px;color:var(--muted);margin-top:2px;">Use the wish list to guide your purchases</div></div>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:12px;padding:12px 16px;">
+              <div style="width:24px;height:24px;border-radius:50%;background:var(--green);color:white;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">4</div>
+              <div><div style="font-size:12px;font-weight:600;color:var(--text);">Drop off gifts</div><div style="font-size:11px;color:var(--muted);margin-top:2px;">We'll send date, time, and location by email</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CTA -->
+        <div style="background:var(--green-bg);border:1.5px solid #a3d4b5;border-radius:14px;padding:16px;margin-bottom:14px;">
+          <div style="font-size:12px;font-weight:700;color:var(--navy);margin-bottom:6px;">Ready to Sponsor?</div>
+          <div style="font-size:12px;color:var(--text);line-height:1.7;margin-bottom:10px;">Email our sponsor account in mid-September and let us know how many children you'd like to support.</div>
+          <div style="background:white;border-radius:10px;padding:12px 14px;">
+            <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-weight:700;margin-bottom:3px;">Sponsor Email</div>
+            <div style="font-size:13px;font-weight:700;color:var(--navy);">cantongfsponsor [at] gmail.com</div>
+          </div>
+        </div>
+
+        <button class="btn-primary" onclick="go('s-sponsor')">Browse Children Available to Sponsor →</button>
+      </div>
+
+      <!-- ── TAB: VOLUNTEER ── -->
+      <div id="inv-volunteer" class="fb" style="display:none;padding-top:20px;">
+
+        <div style="background:white;border:1.5px solid var(--border);border-radius:14px;padding:18px;margin-bottom:14px;">
+          <div style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:8px;">No special skills needed</div>
+          <div style="font-size:13px;color:var(--text);line-height:1.75;">Just a wish to make sure no child in Canton goes without a Christmas. Our busiest season runs <strong>September through mid-December.</strong></div>
+        </div>
+
+        <!-- Volunteer opportunities -->
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:10px;">Ways to Volunteer</div>
+
+        <div style="background:white;border:1.5px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:14px;">
+          <div style="display:flex;align-items:flex-start;gap:14px;padding:16px;border-bottom:1px solid var(--lt-gray);">
+            <div style="width:44px;height:44px;border-radius:12px;background:#fff3e0;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">🍎</div>
+            <div>
+              <div style="font-size:13px;font-weight:700;color:var(--navy);">Holiday Market Food Drive</div>
+              <div style="font-size:12px;color:var(--muted);margin-top:3px;line-height:1.5;">Help collect food donations at our annual Holiday Market event in the fall.</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:14px;padding:16px;border-bottom:1px solid var(--lt-gray);">
+            <div style="width:44px;height:44px;border-radius:12px;background:#eef3fb;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">🎁</div>
+            <div>
+              <div style="font-size:13px;font-weight:700;color:var(--navy);">Summit Gift Drive</div>
+              <div style="font-size:12px;color:var(--muted);margin-top:3px;line-height:1.5;">Pick up a Toy Drive tab at the Summit's pool wall, shop for the toy, and drop it off.</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:14px;padding:16px;border-bottom:1px solid var(--lt-gray);">
+            <div style="width:44px;height:44px;border-radius:12px;background:var(--green-bg);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">🎒</div>
+            <div>
+              <div style="font-size:13px;font-weight:700;color:var(--navy);">Sponsor Bag Drop-Off</div>
+              <div style="font-size:12px;color:var(--muted);margin-top:3px;line-height:1.5;">Help receive and organize sponsor gift bags in early December before Pickup Day.</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:14px;padding:16px;">
+            <div style="width:44px;height:44px;border-radius:12px;background:var(--gold-bg);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">🤝</div>
+            <div>
+              <div style="font-size:13px;font-weight:700;color:var(--navy);">Become a Member</div>
+              <div style="font-size:12px;color:var(--muted);margin-top:3px;line-height:1.5;">Attend our monthly meetings and help shape the program. New members are always welcome!</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Member testimonial -->
+        <div style="background:var(--lt-gray);border-radius:14px;padding:16px;margin-bottom:14px;border-left:4px solid var(--navy);">
+          <div style="font-size:13px;color:var(--text);line-height:1.7;font-style:italic;">"I started volunteering with Goodfellows, became a member, and joined the Board. The volunteers I have met are some of the most selfless and kind people around!"</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:8px;">— Canton Goodfellows member</div>
+        </div>
+
+        <!-- CTA -->
+        <div style="background:var(--navy);border-radius:14px;padding:18px;margin-bottom:14px;">
+          <div style="font-size:13px;font-weight:700;color:white;margin-bottom:8px;">Interested in Volunteering?</div>
+          <div style="font-size:12px;color:rgba(255,255,255,0.75);line-height:1.7;margin-bottom:12px;">Reach out or come to one of our meetings — all are welcome. Check our calendar for upcoming events and meeting dates.</div>
+          <div style="background:white;border-radius:10px;padding:12px 14px;">
+            <div style="font-size:13px;font-weight:700;color:var(--navy);">cantongoodfellows [at] gmail.com</div>
+            <div style="font-size:12px;color:var(--muted);margin-top:3px;">734-664-1044</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── TAB: DONATE ── -->
+      <div id="inv-donate" class="fb" style="display:none;padding-top:20px;">
+
+        <div style="background:var(--navy);border-radius:16px;padding:20px;margin-bottom:14px;text-align:center;">
+          <div style="font-size:36px;margin-bottom:10px;">💛</div>
+          <div style="font-family:'Merriweather',serif;font-size:17px;font-weight:700;color:white;margin-bottom:8px;">Make a Monetary Donation</div>
+          <div style="font-size:12px;color:rgba(255,255,255,0.75);line-height:1.7;">100% of donations support our "No Child Without a Christmas" program. We have no paid staff — every dollar goes to the kids.</div>
+        </div>
+
+        <!-- Transparency bars -->
+        <div style="background:var(--green-bg);border:1.5px solid #a3d4b5;border-radius:14px;padding:16px;margin-bottom:14px;">
+          <div style="font-size:12px;font-weight:700;color:var(--navy);margin-bottom:12px;">Where Your Money Goes</div>
+          <div style="margin-bottom:10px;">
+            <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px;"><span style="color:var(--text);">Program (gifts, food, gift cards)</span><span style="font-weight:700;color:var(--green);">88%</span></div>
+            <div style="height:10px;background:rgba(255,255,255,0.6);border-radius:99px;overflow:hidden;"><div style="width:88%;height:100%;background:var(--green);border-radius:99px;"></div></div>
+          </div>
+          <div style="margin-bottom:10px;">
+            <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px;"><span style="color:var(--text);">Supplies, dues &amp; insurance</span><span style="font-weight:700;color:var(--muted);">11%</span></div>
+            <div style="height:10px;background:rgba(255,255,255,0.6);border-radius:99px;overflow:hidden;"><div style="width:11%;height:100%;background:var(--muted);border-radius:99px;"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px;"><span style="color:var(--text);">Fundraising</span><span style="font-weight:700;color:var(--muted);">1%</span></div>
+            <div style="height:10px;background:rgba(255,255,255,0.6);border-radius:99px;overflow:hidden;"><div style="width:1%;height:100%;background:var(--muted);border-radius:99px;"></div></div>
+          </div>
+          <div style="font-size:10px;color:var(--muted);margin-top:10px;">2024 Campaign Financial Report · All members are unpaid volunteers</div>
+        </div>
+
+        <!-- What donations fund -->
+        <div style="background:white;border:1.5px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:14px;">
+          <div style="background:var(--lt-gray);padding:12px 16px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);">Your Donation Helps Fund</div>
+          <div style="padding:4px 0;">
+            <div style="display:flex;align-items:center;gap:12px;padding:11px 16px;border-bottom:1px solid var(--lt-gray);font-size:12px;color:var(--text);">🎁 <span>Gifts for unsponsored children</span></div>
+            <div style="display:flex;align-items:center;gap:12px;padding:11px 16px;border-bottom:1px solid var(--lt-gray);font-size:12px;color:var(--text);">🥫 <span>Food boxes for every approved family</span></div>
+            <div style="display:flex;align-items:center;gap:12px;padding:11px 16px;border-bottom:1px solid var(--lt-gray);font-size:12px;color:var(--text);">🛍️ <span>Food gift cards for the holiday season</span></div>
+            <div style="display:flex;align-items:center;gap:12px;padding:11px 16px;font-size:12px;color:var(--text);">🎀 <span>Wrapping paper &amp; tape for every family</span></div>
+          </div>
+        </div>
+
+        <!-- Donate button -->
+        <div style="background:var(--gold-bg);border:1.5px solid #e5d080;border-radius:14px;padding:16px;margin-bottom:14px;text-align:center;">
+          <div style="font-size:12px;color:var(--text);line-height:1.7;margin-bottom:12px;">Donate securely through our website. Every amount makes a difference.</div>
+          <div style="background:var(--navy);color:white;border-radius:12px;padding:14px;font-size:14px;font-weight:700;cursor:pointer;">Donate at cantongoodfellows.org →</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:8px;">Canton Goodfellows is a registered 501(c)(3) nonprofit</div>
+        </div>
+      </div>
+
+      <!-- ── TAB: KROGER ── -->
+      <div id="inv-kroger" class="fb" style="display:none;padding-top:20px;">
+
+        <div style="background:white;border:1.5px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:14px;">
+          <div style="background:#e8001c;padding:16px;text-align:center;">
+            <div style="color:white;font-family:'Merriweather',serif;font-size:18px;font-weight:900;letter-spacing:1px;">KROGER</div>
+            <div style="color:rgba(255,255,255,0.85);font-size:11px;margin-top:3px;letter-spacing:2px;text-transform:uppercase;">Community Rewards Program</div>
+          </div>
+          <div style="padding:18px;">
+            <div style="font-size:13px;color:var(--text);line-height:1.75;margin-bottom:14px;">If you're a Kroger shopper, you can support Canton Goodfellows <strong>every time you shop</strong> — at no extra cost to you. Just link your Plus Card once and you're done.</div>
+
+            <div style="background:var(--green-bg);border:1.5px solid #a3d4b5;border-radius:12px;padding:14px;margin-bottom:14px;">
+              <div style="font-size:12px;font-weight:700;color:var(--navy);margin-bottom:4px;">Our Organization Number</div>
+              <div style="font-family:'Merriweather',serif;font-size:28px;font-weight:700;color:var(--green);letter-spacing:4px;">62754</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:4px;">Search "Canton Goodfellows" or enter this number when enrolling</div>
+            </div>
+
+            <!-- Steps -->
+            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:10px;">How to Enroll</div>
+            <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:14px;">
+              <div style="display:flex;align-items:flex-start;gap:12px;">
+                <div style="width:26px;height:26px;border-radius:50%;background:var(--navy);color:white;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">1</div>
+                <div style="font-size:12px;color:var(--text);line-height:1.6;">Visit <strong>kroger.com</strong> and go to Community Rewards</div>
+              </div>
+              <div style="display:flex;align-items:flex-start;gap:12px;">
+                <div style="width:26px;height:26px;border-radius:50%;background:var(--navy);color:white;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">2</div>
+                <div style="font-size:12px;color:var(--text);line-height:1.6;">Sign in with your Kroger Plus Card account</div>
+              </div>
+              <div style="display:flex;align-items:flex-start;gap:12px;">
+                <div style="width:26px;height:26px;border-radius:50%;background:var(--navy);color:white;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">3</div>
+                <div style="font-size:12px;color:var(--text);line-height:1.6;">Search for <strong>Canton Goodfellows</strong> or enter <strong>62754</strong></div>
+              </div>
+              <div style="display:flex;align-items:flex-start;gap:12px;">
+                <div style="width:26px;height:26px;border-radius:50%;background:var(--green);color:white;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">✓</div>
+                <div style="font-size:12px;color:var(--text);line-height:1.6;">Select us and you're done! Earn rewards every time you shop with your Plus Card.</div>
+              </div>
+            </div>
+
+            <div style="background:var(--gold-bg);border:1.5px solid #e5d080;border-radius:12px;padding:12px 14px;margin-bottom:4px;">
+              <div style="font-size:12px;color:#6b4f00;line-height:1.6;">✅ <strong>Already enrolled?</strong> You do NOT need to re-enroll each April — your selection carries over automatically.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /s-involved -->
+
+  </div><!-- /phone -->
+
+  <!-- Nav pills — full flow -->
+  <div class="npills">
+    <button class="np np-navy"  onclick="go('s-home')">🏠 Home</button>
+    <button class="np np-lt"    onclick="go('s-step1')">📝 Apply: Step 1</button>
+    <button class="np np-lt"    onclick="go('s-step2')">👧 Step 2: Children</button>
+    <button class="np np-gold"  onclick="go('s-step3')">🎁 Step 3: Wish Lists</button>
+    <button class="np np-lt"    onclick="go('s-step4')">📄 Step 4: Docs</button>
+    <button class="np np-lt"    onclick="go('s-step5')">✅ Step 5: Review</button>
+    <button class="np np-lt"    onclick="go('s-submitted')">📋 Submitted</button>
+    <button class="np np-green" onclick="go('s-admin')">⚙️ Admin</button>
+    <button class="np np-green" onclick="go('s-admin-detail')">🔍 Admin: Review</button>
+    <button class="np np-green" onclick="go('s-admin-approved')">✅ Admin: Approved</button>
+    <button class="np np-gold"  onclick="go('s-sponsor')">⭐ Sponsor</button>
+    <button class="np np-gold"  onclick="go('s-sponsor-confirm')">📋 Sponsor: Confirm</button>
+    <button class="np np-gold"  onclick="go('s-sponsor-dashboard')">📅 Sponsor: Dashboard</button>
+    <button class="np np-navy"  onclick="go('s-bag-label')">📱 Bag Label</button>
+    <button class="np np-lt"    onclick="go('s-about')">ℹ️ About</button>
+    <button class="np np-green" onclick="go('s-status-check')">🔍 Status Check</button>
+    <button class="np np-green" onclick="go('s-status-submitted')">📬 Status: Submitted</button>
+    <button class="np np-green" onclick="go('s-status-review')">🔎 Status: Review</button>
+    <button class="np np-green" onclick="go('s-status-approved')">🎉 Status: Approved</button>
+    <button class="np np-green" onclick="go('s-status-denied')">💌 Status: Denied</button>
+    <button class="np np-navy"  onclick="go('s-notifications')">📧 Notifications</button>
+    <button class="np np-red"   onclick="go('s-involved')">❤️ Get Involved</button>
+  </div>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+  // ── Application window: Oct 1 – Nov 15 ──
+  const OPEN_MONTH  = 9;  // October  (0-indexed)
+  const OPEN_DAY    = 1;
+  const CLOSE_MONTH = 10; // November (0-indexed)
+  const CLOSE_DAY   = 15;
+
+  function isAppOpen() {
+    const now   = new Date();
+    const year  = now.getFullYear();
+    const open  = new Date(year, OPEN_MONTH,  OPEN_DAY);
+    const close = new Date(year, CLOSE_MONTH, CLOSE_DAY, 23, 59, 59);
+    return now >= open && now <= close;
+  }
+
+  function daysUntil(date) {
+    const diff = date - new Date();
+    return Math.ceil(diff / (1000 * 60 * 60 * 24));
+  }
+
+  function goApply() {
+    go(isAppOpen() ? 's-step1' : 's-closed');
+  }
+
+  function initApplyPortal() {
+    const now    = new Date();
+    const year   = now.getFullYear();
+    const open   = new Date(year, OPEN_MONTH,  OPEN_DAY);
+    const close  = new Date(year, CLOSE_MONTH, CLOSE_DAY, 23, 59, 59);
+    const open_  = isAppOpen();
+
+    // Portal card on home screen
+    const card    = document.getElementById('apply-portal-card');
+    const sub     = document.getElementById('apply-portal-sub');
+    const icon    = document.getElementById('apply-portal-icon');
+    const arrow   = document.getElementById('apply-portal-arrow');
+
+    if (open_) {
+      const dLeft = daysUntil(close);
+      sub.textContent   = 'Applications open now — closes Nov 15. ' + dLeft + ' day' + (dLeft===1?'':'s') + ' left.';
+      card.style.borderColor = 'var(--green)';
+      icon.style.background  = 'var(--green-bg)';
+    } else {
+      const before = now < open;
+      const dAway  = daysUntil(before ? open : new Date(year+1, OPEN_MONTH, OPEN_DAY));
+      sub.textContent   = before
+        ? 'Applications open Oct 1 — ' + dAway + ' day' + (dAway===1?'':'s') + ' away.'
+        : 'Applications closed Nov 15. Next window opens Oct 1.';
+      card.style.borderColor = 'var(--border)';
+      card.style.opacity     = '0.75';
+      icon.style.background  = 'var(--lt-gray)';
+      arrow.textContent      = '🔒';
+    }
+
+    // Closed screen countdown text
+    const countdown = document.getElementById('closed-countdown');
+    const iconWrap  = document.getElementById('closed-icon-wrap');
+    const headline  = document.getElementById('closed-headline');
+    const body      = document.getElementById('closed-body');
+    if (countdown) {
+      const before = now < open;
+      if (before) {
+        const d = daysUntil(open);
+        iconWrap.style.background = '#eef3fb';
+        headline.textContent = 'Applications Open Soon';
+        body.innerHTML = 'The 2025 application window opens on <strong style="color:var(--navy)">October 1</strong>. Mark your calendar — applications are reviewed first-come, first-served.';
+        countdown.innerHTML = '📅 <strong>' + d + ' day' + (d===1?'':'s') + '</strong> until applications open on October 1.';
+      } else {
+        iconWrap.style.background = '#fdecea';
+        const nextOpen = new Date(year+1, OPEN_MONTH, OPEN_DAY);
+        const d = daysUntil(nextOpen);
+        headline.textContent = 'Applications are Closed';
+        body.innerHTML = 'The 2025 application window ran from <strong style="color:var(--navy)">October 1</strong> to <strong style="color:var(--navy)">November 15</strong>. The next window opens October 1, ' + (year+1) + '.';
+        countdown.innerHTML = 'The 2025 window has closed. Next window opens <strong>October 1, ' + (year+1) + '</strong> — ' + d + ' day' + (d===1?'':'s') + ' away.';
+      }
+    }
+  }
+
+  window.addEventListener('DOMContentLoaded', initApplyPortal);
+
+  function go(id) {
+    document.querySelectorAll('.scr').forEach(s => s.classList.remove('on'));
+    const t = document.getElementById(id);
+    if (t) { t.classList.add('on'); t.scrollTop = 0; }
+  }
+  function switchChild(idx, el) {
+    document.querySelectorAll('.ctab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    document.querySelectorAll('[id^="cp-"]').forEach(p => p.style.display='none');
+    document.getElementById('cp-'+idx).style.display='block';
+  }
+  function selectPref(choice) {
+    ['both','text','email'].forEach(p => {
+      const el = document.getElementById('pref-'+p);
+      if (p === choice) {
+        el.style.border = '2px solid var(--navy)';
+        el.style.background = '#eef3fb';
+        el.querySelector('div:last-child').style.color = 'var(--navy)';
+      } else {
+        el.style.border = '2px solid var(--border)';
+        el.style.background = 'white';
+        el.querySelector('div:last-child').style.color = 'var(--muted)';
+      }
+    });
+  }
+  function switchAbout(tabId, el) {
+    document.getElementById('about-tabs').querySelectorAll('.ctab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    ['about-mission','about-how','about-history','about-board'].forEach(id => {
+      document.getElementById(id).style.display = (id === tabId) ? 'block' : 'none';
+    });
+  }
+  function switchInvolved(tabId, el) {
+    document.getElementById('involved-tabs').querySelectorAll('.ctab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    ['inv-sponsor','inv-volunteer','inv-donate','inv-kroger'].forEach(id => {
+      document.getElementById(id).style.display = (id === tabId) ? 'block' : 'none';
+    });
+  }
+  function switchMethod(method, el) {
+    el.closest('.method-toggle').querySelectorAll('.mtab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById('method-manual').style.display = method==='manual' ? 'block' : 'none';
+    document.getElementById('method-amazon').style.display = method==='amazon' ? 'block' : 'none';
+  }
+  function toggleCard(id) {
+    document.getElementById(id).classList.toggle('expanded');
+  }
+  function toggleNotif(id) {
+    const el = document.getElementById(id);
+    el.style.display = el.style.display === 'none' ? 'block' : 'none';
+  }
+  function updatePreview(val) {
+    const n = val || '___';
+    document.getElementById('id-a').textContent = 'F'+n+'-A';
+    document.getElementById('id-b').textContent = 'F'+n+'-B';
+  }
+</script>
+</body>
+</html>
